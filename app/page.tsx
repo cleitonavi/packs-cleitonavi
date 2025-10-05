@@ -265,23 +265,22 @@ function CarouselProjetos() {
 
   // posições e velocidade (px/s)
   const posTop = React.useRef(0);       // topo anda para a esquerda (valores negativos)
-  const posBottom = React.useRef(0);    // base anda para a direita (valores positivos)
-  const baseTop = React.useRef(-60);    // velocidade base topo (px/s) — mais rápido
-  const baseBottom = React.useRef(-60);  // velocidade base base (px/s)
+  const posBottom = React.useRef(0);    // base anda para a esquerda também (a fila é invertida)
+  const baseTop = React.useRef(-60);    // velocidade base topo (px/s)
+  const baseBottom = React.useRef(-60); // velocidade base base (px/s) — IMPORTANTE: negativa
   const dragVel = React.useRef(0);      // componente de velocidade extra (drag)
   const lastTime = React.useRef<number | null>(null);
 
-  // métricas do item (mantenha alinhado com classes abaixo)
+  // métricas do item — DEVEM bater com as classes abaixo
   const ITEM_W = 320; // w-[320px]
-  const GAP = 24;     // gap-6
-  const TOP_COUNT = projectImagesTop.length;   // deve ser 5
-  const BOT_COUNT = projectImagesBottom.length; // deve ser 5
+  const GAP = 24;     // gap-6 = 24px
+  const TOP_COUNT = projectImagesTop.length;    // 5
+  const BOT_COUNT = projectImagesBottom.length; // 5
   const loopWTop = TOP_COUNT * ITEM_W + (TOP_COUNT - 1) * GAP;
   const loopWBot = BOT_COUNT * ITEM_W + (BOT_COUNT - 1) * GAP;
 
   React.useEffect(() => {
     let raf = 0;
-    const friction = 0.92; // atrito da inércia
 
     const step = (t: number) => {
       if (lastTime.current == null) lastTime.current = t;
@@ -292,17 +291,18 @@ function CarouselProjetos() {
       posTop.current += (baseTop.current + dragVel.current) * dt;
       posBottom.current += (baseBottom.current + dragVel.current) * dt;
 
-      // wrap infinito
-      const wrapNeg = (pos: number, w: number) => (pos <= -w ? pos + w : pos > 0 ? pos - w : pos);
-      const wrapPos = (pos: number, w: number) => (pos >= w ? pos - w : pos < 0 ? pos + w : pos);
+      // wrap infinito (para a ESQUERDA)
+      const wrapNeg = (pos: number, w: number) =>
+        pos <= -w ? pos + w : pos > 0 ? pos - w : pos;
+
       posTop.current = wrapNeg(posTop.current, loopWTop);
-      posBottom.current = wrapNeg(posBottom.current, loopWBot);
+      posBottom.current = wrapNeg(posBottom.current, loopWBot); // <- igual ao topo
 
       // aplica transform
       if (topRef.current) topRef.current.style.transform = `translateX(${posTop.current}px)`;
       if (bottomRef.current) bottomRef.current.style.transform = `translateX(${posBottom.current}px)`;
 
-      // inércia: desacelera suavemente
+      // inércia do drag
       dragVel.current *= 0.92;
       if (Math.abs(dragVel.current) < 0.05) dragVel.current = 0;
 
@@ -334,7 +334,6 @@ function CarouselProjetos() {
     state.current.lastX = e.clientX;
     state.current.lastT = now;
 
-    // boost limitado + suavização
     const boost = Math.max(-600, Math.min(600, dx / dt)); // px/s
     dragVel.current = dragVel.current * 0.6 + boost * 0.4;
   };
@@ -350,13 +349,13 @@ function CarouselProjetos() {
   return (
     <div
       ref={wrapRef}
-      className="mx-auto max-w-7xl space-y-4 select-none"
+      className="space-y-4 select-none"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
     >
-      {/* Linha de cima — ← esquerda (SEM BORDA) */}
+      {/* Linha de cima — anda ← */}
       <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A]">
         <div ref={topRef} className="flex gap-6 will-change-transform py-4 px-2" style={{ transform: "translateX(0)" }}>
           {[...projectImagesTop, ...projectImagesTop].map((src, i) => (
@@ -372,18 +371,18 @@ function CarouselProjetos() {
             </div>
           ))}
         </div>
-        {/* Gradientes laterais */}
+        {/* gradientes */}
         <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0A0A0A] to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0A0A0A] to-transparent" />
       </div>
 
-      {/* Linha de baixo — → direita (SEM BORDA) */}
+      {/* Linha de baixo — visualmente → (fila invertida, mas movimento real é ←) */}
       <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A]">
-       <div
-  ref={bottomRef}
-  className="flex flex-row-reverse gap-6 will-change-transform py-4 px-2"
-  style={{ transform: "translateX(0)" }}
->
+        <div
+          ref={bottomRef}
+          className="flex flex-row-reverse gap-6 will-change-transform py-4 px-2"
+          style={{ transform: "translateX(0)" }}
+        >
           {[...projectImagesBottom, ...projectImagesBottom].map((src, i) => (
             <div key={`b-${i}`} className="relative h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-[#111]">
               <Image
@@ -397,6 +396,7 @@ function CarouselProjetos() {
             </div>
           ))}
         </div>
+        {/* gradientes */}
         <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0A0A0A] to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0A0A0A] to-transparent" />
       </div>
@@ -514,6 +514,11 @@ const missing = (required as Array<keyof FormState>).filter((k) => !form[k]);
     <h2 className="mb-10 text-4xl tracking-tight text-white sm:text-5xl">
       Trabalhos selecionados
     </h2>
+
+    <CarouselProjetos />
+  </div>
+</section>
+
 
 
 
