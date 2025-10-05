@@ -1,6 +1,6 @@
 'use client';
+import Image from "next/image";
 // trigger deploy
-
 import React from "react";
 // Removed external UI animation & icon libs to avoid sandbox import errors.
 // Replaced framer-motion with CSS hover transitions and lucide-react with local SVG icons.
@@ -124,6 +124,23 @@ const projects = [
   },
 ];
 
+// Carrossel só de imagens (duas linhas — 5 em cima, 5 embaixo)
+const projectImagesTop = [
+  "/projetos/cima-1.jpg",
+  "/projetos/cima-2.jpg",
+  "/projetos/cima-3.jpg",
+  "/projetos/cima-4.jpg",
+  "/projetos/cima-5.jpg",
+];
+
+const projectImagesBottom = [
+  "/projetos/baixo-1.jpg",
+  "/projetos/baixo-2.jpg",
+  "/projetos/baixo-3.jpg",
+  "/projetos/baixo-4.jpg",
+  "/projetos/baixo-5.jpg",
+];
+
 const packages = [
   {
     name: "Essencial",
@@ -241,6 +258,147 @@ type FormState = {
   vision: string;
   challenge: string;
 };
+function CarouselProjetos() {
+  const wrapRef = React.useRef<HTMLDivElement | null>(null);
+  const topRef = React.useRef<HTMLDivElement | null>(null);
+  const bottomRef = React.useRef<HTMLDivElement | null>(null);
+
+  // posições e velocidade (px/s)
+  const posTop = React.useRef(0);       // topo anda para a esquerda (valores negativos)
+  const posBottom = React.useRef(0);    // base anda para a direita (valores positivos)
+  const baseTop = React.useRef(-60);    // velocidade base topo (px/s) — mais rápido
+  const baseBottom = React.useRef(60);  // velocidade base base (px/s)
+  const dragVel = React.useRef(0);      // componente de velocidade extra (drag)
+  const lastTime = React.useRef<number | null>(null);
+
+  // métricas do item (mantenha alinhado com classes abaixo)
+  const ITEM_W = 320; // w-[320px]
+  const GAP = 24;     // gap-6
+  const TOP_COUNT = projectImagesTop.length;   // deve ser 5
+  const BOT_COUNT = projectImagesBottom.length; // deve ser 5
+  const loopWTop = TOP_COUNT * ITEM_W + (TOP_COUNT - 1) * GAP;
+  const loopWBot = BOT_COUNT * ITEM_W + (BOT_COUNT - 1) * GAP;
+
+  React.useEffect(() => {
+    let raf = 0;
+    const friction = 0.92; // atrito da inércia
+
+    const step = (t: number) => {
+      if (lastTime.current == null) lastTime.current = t;
+      const dt = (t - lastTime.current) / 1000;
+      lastTime.current = t;
+
+      // velocidade base + drag
+      posTop.current += (baseTop.current + dragVel.current) * dt;
+      posBottom.current += (baseBottom.current + dragVel.current) * dt;
+
+      // wrap infinito
+      const wrapNeg = (pos: number, w: number) => (pos <= -w ? pos + w : pos > 0 ? pos - w : pos);
+      const wrapPos = (pos: number, w: number) => (pos >= w ? pos - w : pos < 0 ? pos + w : pos);
+      posTop.current = wrapNeg(posTop.current, loopWTop);
+      posBottom.current = wrapPos(posBottom.current, loopWBot);
+
+      // aplica transform
+      if (topRef.current) topRef.current.style.transform = `translateX(${posTop.current}px)`;
+      if (bottomRef.current) bottomRef.current.style.transform = `translateX(${posBottom.current}px)`;
+
+      // inércia: desacelera suavemente
+      dragVel.current *= 0.92;
+      if (Math.abs(dragVel.current) < 0.05) dragVel.current = 0;
+
+      raf = requestAnimationFrame(step);
+    };
+
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [loopWTop, loopWBot]);
+
+  // drag acelera na direção do gesto
+  const state = React.useRef({ dragging: false, lastX: 0, lastT: 0 });
+
+  const onPointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    const el = wrapRef.current;
+    if (!el) return;
+    el.setPointerCapture(e.pointerId);
+    state.current.dragging = true;
+    state.current.lastX = e.clientX;
+    state.current.lastT = performance.now();
+    el.classList.add("cursor-grabbing");
+  };
+
+  const onPointerMove: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    if (!state.current.dragging) return;
+    const now = performance.now();
+    const dx = e.clientX - state.current.lastX;
+    const dt = (now - state.current.lastT) / 1000;
+    state.current.lastX = e.clientX;
+    state.current.lastT = now;
+
+    // boost limitado + suavização
+    const boost = Math.max(-600, Math.min(600, dx / dt)); // px/s
+    dragVel.current = dragVel.current * 0.6 + boost * 0.4;
+  };
+
+  const onPointerUp: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    const el = wrapRef.current;
+    if (!el) return;
+    state.current.dragging = false;
+    el.releasePointerCapture(e.pointerId);
+    el.classList.remove("cursor-grabbing");
+  };
+
+  return (
+    <div
+      ref={wrapRef}
+      className="mx-auto max-w-7xl space-y-4 select-none"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+    >
+      {/* Linha de cima — ← esquerda (SEM BORDA) */}
+      <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A]">
+        <div ref={topRef} className="flex gap-6 will-change-transform py-4 px-2" style={{ transform: "translateX(0)" }}>
+          {[...projectImagesTop, ...projectImagesTop].map((src, i) => (
+            <div key={`t-${i}`} className="relative h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-[#111]">
+              <Image
+                src={src}
+                alt={`Projeto ${i + 1}`}
+                fill
+                className="object-cover transition-transform duration-300 hover:scale-[1.03]"
+                sizes="(max-width: 768px) 75vw, 320px"
+                priority={i < 2}
+              />
+            </div>
+          ))}
+        </div>
+        {/* Gradientes laterais */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0A0A0A] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0A0A0A] to-transparent" />
+      </div>
+
+      {/* Linha de baixo — → direita (SEM BORDA) */}
+      <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A]">
+        <div ref={bottomRef} className="flex gap-6 will-change-transform py-4 px-2" style={{ transform: "translateX(0)" }}>
+          {[...projectImagesBottom, ...projectImagesBottom].map((src, i) => (
+            <div key={`b-${i}`} className="relative h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-[#111]">
+              <Image
+                src={src}
+                alt={`Projeto ${i + 1}`}
+                fill
+                className="object-cover transition-transform duration-300 hover:scale-[1.03]"
+                sizes="(max-width: 768px) 75vw, 320px"
+                priority={i < 2}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0A0A0A] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0A0A0A] to-transparent" />
+      </div>
+    </div>
+  );
+}
 
 export default function CleitonAviLanding() {
   const [open, setOpen] = React.useState(false);
@@ -346,37 +504,12 @@ const missing = (required as Array<keyof FormState>).filter((k) => !form[k]);
         </div>
       </section>
 
-      {/* PROJETOS */}
-      <section id="projetos" className="px-6 py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-10">
-            <h2 className="text-4xl tracking-tight text-white sm:text-5xl">Trabalhos selecionados</h2>
-            <p className="mt-2 text-sm text-white/70">Marcas que ajudei a transformar</p>
-          </div>
-          <div className="relative">
-            <div className="flex gap-6 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-              {[...projects, ...projects].map((p, i) => (
-                <div
-                  key={i}
-                  className="group min-w-[320px] max-w-[320px] rounded-xl border border-white/10 bg-[#0A0A0A] transition-transform duration-200 hover:-translate-y-1.5"
-                >
-                  <div className="relative h-44 w-full overflow-hidden rounded-t-xl" style={{ background: "#D1D5DB" }}>
-                    <div className="absolute inset-0 grid place-items-center">
-                      <div className="h-24 w-24 rounded-full opacity-20" style={{ background: `linear-gradient(135deg, ${p.color}, ${p.color}CC)` }} />
-                    </div>
-                  </div>
-                  <div className="space-y-2 p-5">
-                    <span className="inline-flex rounded-full border border-white/15 px-2.5 py-1 text-[10px] tracking-wider text-white/70 uppercase">{p.tag}</span>
-                    <h3 className="text-xl text-white">{p.title}</h3>
-                    <p className="text-sm text-white/70">{p.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#0A0A0A] to-transparent" />
-          </div>
-        </div>
-      </section>
+{/* PROJETOS — duas linhas de imagens, sem textos, com drag que acelera */}
+<section id="projetos" className="px-6 py-24">
+  <CarouselProjetos />
+</section>
+
+
 
       {/* PACOTES */}
       <section id="pacotes" className="px-6 py-24">
