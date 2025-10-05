@@ -267,7 +267,7 @@ function CarouselProjetos() {
   const posTop = React.useRef(0);       // topo anda para a esquerda (valores negativos)
   const posBottom = React.useRef(0);    // base anda para a direita (valores positivos)
   const baseTop = React.useRef(-60);    // velocidade base topo (px/s) — mais rápido
-  const baseBottom = React.useRef(60);  // velocidade base base (px/s)
+  const baseBottom = React.useRef(-60);  // velocidade base base (px/s)
   const dragVel = React.useRef(0);      // componente de velocidade extra (drag)
   const lastTime = React.useRef<number | null>(null);
 
@@ -296,7 +296,7 @@ function CarouselProjetos() {
       const wrapNeg = (pos: number, w: number) => (pos <= -w ? pos + w : pos > 0 ? pos - w : pos);
       const wrapPos = (pos: number, w: number) => (pos >= w ? pos - w : pos < 0 ? pos + w : pos);
       posTop.current = wrapNeg(posTop.current, loopWTop);
-      posBottom.current = wrapPos(posBottom.current, loopWBot);
+      posBottom.current = wrapNeg(posBottom.current, loopWBot);
 
       // aplica transform
       if (topRef.current) topRef.current.style.transform = `translateX(${posTop.current}px)`;
@@ -379,7 +379,11 @@ function CarouselProjetos() {
 
       {/* Linha de baixo — → direita (SEM BORDA) */}
       <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A]">
-        <div ref={bottomRef} className="flex gap-6 will-change-transform py-4 px-2" style={{ transform: "translateX(0)" }}>
+        <div
+  ref={bottomRef}
+  className="flex flex-row-reverse gap-6 will-change-transform py-4 px-2"
+  style={{ transform: "translateX(0)" }}
+        >
           {[...projectImagesBottom, ...projectImagesBottom].map((src, i) => (
             <div key={`b-${i}`} className="relative h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-[#111]">
               <Image
@@ -506,8 +510,10 @@ const missing = (required as Array<keyof FormState>).filter((k) => !form[k]);
 
 {/* PROJETOS — duas linhas de imagens, sem textos, com drag que acelera */}
 <section id="projetos" className="px-6 py-24">
-  <CarouselProjetos />
-</section>
+  <div className="mx-auto max-w-7xl">
+    <h2 className="mb-10 text-4xl tracking-tight text-white sm:text-5xl">
+      Trabalhos selecionados
+    </h2>
 
 
 
