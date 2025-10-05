@@ -1,4 +1,5 @@
 'use client';
+// trigger deploy
 
 import React from "react";
 // Removed external UI animation & icon libs to avoid sandbox import errors.
