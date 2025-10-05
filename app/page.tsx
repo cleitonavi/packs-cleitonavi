@@ -224,17 +224,27 @@ function runDevTests() {
     const prazoRow = compareRows.find((r) => /Prazo/i.test(r.label));
     if (!prazoRow || !/2–6/.test(prazoRow.cleiton)) throw new Error("Prazo esperado '2–6 semanas' não encontrado");
 
-    // eslint-disable-next-line no-console
     console.debug("[LP Tests] OK");
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.error("[LP Tests] Falha:", e);
   }
 }
 
+type FormState = {
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  pack: string;
+  timeline: string;
+  budget: string;
+  vision: string;
+  challenge: string;
+};
+
 export default function CleitonAviLanding() {
   const [open, setOpen] = React.useState(false);
-  const [form, setForm] = React.useState({
+const [form, setForm] = React.useState<FormState>({
     name: "",
     email: "",
     phone: "",
@@ -247,8 +257,8 @@ export default function CleitonAviLanding() {
   });
 
   const submit = () => {
-    const required = ["name", "email", "phone", "company", "pack", "timeline", "budget", "vision"];
-    const missing = required.filter((k) => !(form as any)[k]);
+    const required = ["name","email","phone","company","pack","timeline","budget","vision"] as const;
+const missing = (required as Array<keyof FormState>).filter((k) => !form[k]);
     if (missing.length) {
       alert("Preencha os campos obrigatórios.");
       return;
@@ -613,12 +623,22 @@ export default function CleitonAviLanding() {
 
 // Executa os testes apenas em ambientes de desenvolvimento (sem ruído em produção)
 function isDevEnv() {
-  // Node/Next
-  // @ts-ignore
-  if (typeof process !== "undefined" && process?.env?.NODE_ENV && process.env.NODE_ENV !== "production") return true;
-  // Heurística de localhost no browser
-  if (typeof location !== "undefined" && /localhost|127\.0\.0\.1/.test(location.hostname)) return true;
+  if (
+    typeof process !== "undefined" &&
+    process.env &&
+    process.env.NODE_ENV &&
+    process.env.NODE_ENV !== "production"
+  ) {
+    return true;
+  }
+  if (
+    typeof location !== "undefined" &&
+    /localhost|127\.0\.0\.1/.test(location.hostname)
+  ) {
+    return true;
+  }
   return false;
 }
+
 
 if (typeof window !== "undefined" && isDevEnv()) runDevTests();
