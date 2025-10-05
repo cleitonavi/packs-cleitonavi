@@ -428,47 +428,95 @@ export default function CleitonAviLanding() {
       </section>
 
       {/* COMPARATIVO */}
-      <section id="comparativo" className="px-6 py-24 text-center">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-10">
-            <h2 className="text-4xl tracking-tight text-white sm:text-5xl capitalize">Por Que Escolher Pacotes Fixos?</h2>
-            <p className="mt-2 text-sm text-white/70 capitalize">Compare e veja a diferença</p>
-          </div>
+<section id="comparativo" className="px-6 py-24">
+  <div className="mx-auto max-w-7xl">
+    {/* títulos centralizados + sentence case apenas no primeiro caractere */}
+    <h2 className="mb-2 text-center text-4xl sm:text-5xl tracking-tight text-white">
+      Por que escolher pacotes fixos?
+    </h2>
+    <p className="mb-10 text-center text-sm text-white/70">
+      Compare e veja a diferença
+    </p>
 
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0B0F14]">
-            <table className="w-full border-collapse text-sm capitalize">
-              <thead>
-                <tr className="bg-[#0E1620] text-white/80">
-                  <th className="w-1/4 px-5 py-4 text-left font-medium">&nbsp;</th>
-                  <th className="w-1/4 px-5 py-4 text-left font-medium text-white/70">Agências Tradicionais</th>
-                  <th className="w-1/4 px-5 py-4 text-left font-medium text-white/70">Freelancers</th>
-                  {/* destaque DS turquesa */}
-                  <th className="w-1/4 px-5 py-4 text-left font-semibold bg-[#00CFAF] text-black">Cleiton Avi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {compareRows.map((r, idx) => (
-                  <tr key={r.label} className={idx % 2 === 0 ? 'bg-[#0A1118]' : 'bg-[#0C121A]'}>
-                    <td className="px-5 py-4 text-white/80">{r.label}</td>
-                    <td className="px-5 py-4 text-white/70">{r.agencies}</td>
-                    <td className="px-5 py-4 text-white/70">{r.freelancers}</td>
-                    <td className="px-5 py-4 font-medium text-[#00CFAF]">{r.cleiton}</td>
+    {/* helper sentence-case: só a primeira letra vira maiúscula; se começar com número, mantém */}
+    {/*
+      Coloquei dentro do JSX para ficar 100% colável. Se preferir,
+      extraia para o topo do arquivo.
+    */}
+    {(() => {
+      function sentenceCase(input: string) {
+        if (!input) return "";
+        const s = input.trim();
+        // se começa com letra, sobe só a primeira e baixa o resto
+        if (/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(s)) {
+          return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+        }
+        // se começa com número/símbolo, retorna do jeito que está
+        return s;
+      }
+
+      return (
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0A1116]">
+          <table className="w-full border-collapse text-[15px]">
+            <thead>
+              <tr className="text-white/80">
+                <th className="w-[22%] px-5 py-4 text-left font-medium bg-[#0D1419]">
+                  &nbsp;
+                </th>
+                <th className="w-[26%] px-5 py-4 text-left font-medium bg-[#0D1419]">
+                  {sentenceCase("agências tradicionais")}
+                </th>
+                <th className="w-[26%] px-5 py-4 text-left font-medium bg-[#0D1419]">
+                  {sentenceCase("freelancers")}
+                </th>
+                <th className="w-[26%] px-5 py-4 text-left font-semibold bg-[#14B8A6] text-black">
+                  {sentenceCase("cleiton avi")}
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {compareRows.map((r, idx) => {
+                const rowBg = idx % 2 === 0 ? "bg-[#0A1318]" : "bg-[#0C151B]";
+                return (
+                  <tr key={r.label} className={rowBg}>
+                    {/* 1ª coluna — destaque extra */}
+                    <td className="px-5 py-4 font-semibold text-white/90 bg-[#0D1419] border-l-4 border-[#14B8A6]">
+                      {sentenceCase(r.label)}
+                    </td>
+
+                    {/* Demais colunas */}
+                    <td className="px-5 py-4 text-white/75">
+                      {sentenceCase(String(r.agencies))}
+                    </td>
+                    <td className="px-5 py-4 text-white/75">
+                      {sentenceCase(String(r.freelancers))}
+                    </td>
+                    <td className="px-5 py-4 font-medium text-[#2DD4BF]">
+                      {/* mantém “2–6 semanas”, “R$” etc se começarem com número/símbolo */}
+                      {sentenceCase(String(r.cleiton))}
+                    </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="border-t border-white/10 px-5 py-3 text-center text-xs text-white/50 lowercase">
-              *revisões ilimitadas no conceito escolhido durante a fase de desenvolvimento.
-            </div>
+                );
+              })}
+            </tbody>
+          </table>
+
+          <div className="border-t border-white/10 px-5 py-3 text-center text-xs text-white/55">
+            *Revisões ilimitadas no conceito escolhido durante a fase de desenvolvimento.
           </div>
         </div>
-      </section>
+      );
+    })()}
+  </div>
+</section>
+
 
       {/* PROCESSO */}
       <section id="processo" className="border-y border-white/5 bg-[#111111] px-6 py-24 text-center">
         <div className="mx-auto max-w-7xl">
           <div className="mb-14">
-            <h2 className="text-4xl tracking-tight text-white sm:text-5xl capitalize">Como Funciona O Processo</h2>
+            <h2 className="text-4xl tracking-tight text-white sm:text-5xl capitalize">Como funciona o processo</h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm text-white/70 capitalize">Transparente, colaborativo e focado em resultado.</p>
           </div>
           <div className="grid grid-cols-1 gap-4 text-left">
