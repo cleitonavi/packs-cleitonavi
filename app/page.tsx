@@ -1,9 +1,8 @@
 'use client';
+
 import Image from "next/image";
-// trigger deploy
 import React from "react";
-// Removed external UI animation & icon libs to avoid sandbox import errors.
-// Replaced framer-motion with CSS hover transitions and lucide-react with local SVG icons.
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -12,337 +11,134 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 
-/**
- * Cleiton Avi — Landing Page (single-file)
- * Stack: React + Tailwind + shadcn/ui (no external icons/motion)
- * Notes:
- * - Visual conforme guidelines: fundo #0A0A0A, acentos teal (#2DD4BF / #14B8A6), títulos em branco.
- * - Removido framer-motion e lucide-react para compatibilidade com sandbox.
- * - Testes de dev executam apenas em ambiente de desenvolvimento (sem imports condicionais inválidos).
- */
-
-// ----------------------------
-// Local SVG Icons (lucide-like)
-// ----------------------------
-
+/* ícones svg locais */
 type IconProps = React.SVGProps<SVGSVGElement> & { className?: string };
-
 function svgProps(props: IconProps) {
-  return {
-    width: 24,
-    height: 24,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 2,
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    ...props,
-  } as const;
+  return { width: 24, height: 24, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", ...props } as const;
 }
+export function CheckIcon(props: IconProps) { return (<svg {...svgProps(props)}><path d="M20 6L9 17l-5-5" /></svg>); }
+export function XIcon(props: IconProps) { return (<svg {...svgProps(props)}><path d="M18 6L6 18M6 6l12 12" /></svg>); }
+export function ArrowRightIcon(props: IconProps) { return (<svg {...svgProps(props)}><path d="M5 12h14" /><path d="M13 5l7 7-7 7" /></svg>); }
+export function ClockIcon(props: IconProps) { return (<svg {...svgProps(props)}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>); }
+export function TargetIcon(props: IconProps) { return (<svg {...svgProps(props)}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1" /></svg>); }
+export function ZapIcon(props: IconProps) { return (<svg {...svgProps(props)}><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" /></svg>); }
+export function AwardIcon(props: IconProps) { return (<svg {...svgProps(props)}><circle cx="12" cy="8" r="5" /><path d="M8.5 13L7 22l5-3 5 3-1.5-9" /></svg>); }
 
-export function CheckIcon(props: IconProps) {
-  return (
-    <svg {...svgProps(props)}>
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  );
-}
-export function XIcon(props: IconProps) {
-  return (
-    <svg {...svgProps(props)}>
-      <path d="M18 6L6 18M6 6l12 12" />
-    </svg>
-  );
-}
-export function ArrowRightIcon(props: IconProps) {
-  return (
-    <svg {...svgProps(props)}>
-      <path d="M5 12h14" />
-      <path d="M13 5l7 7-7 7" />
-    </svg>
-  );
-}
-export function ClockIcon(props: IconProps) {
-  return (
-    <svg {...svgProps(props)}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 3" />
-    </svg>
-  );
-}
-export function TargetIcon(props: IconProps) {
-  return (
-    <svg {...svgProps(props)}>
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="5" />
-      <circle cx="12" cy="12" r="1" />
-    </svg>
-  );
-}
-export function ZapIcon(props: IconProps) {
-  return (
-    <svg {...svgProps(props)}>
-      <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
-    </svg>
-  );
-}
-export function AwardIcon(props: IconProps) {
-  return (
-    <svg {...svgProps(props)}>
-      <circle cx="12" cy="8" r="5" />
-      <path d="M8.5 13L7 22l5-3 5 3-1.5-9" />
-    </svg>
-  );
-}
+/* imagens do carrossel (coloque esses arquivos em /public/projetos/) */
+const projectImagesTop = ["/projetos/cima-1.jpg","/projetos/cima-2.jpg","/projetos/cima-3.jpg","/projetos/cima-4.jpg","/projetos/cima-5.jpg"];
+const projectImagesBottom = ["/projetos/baixo-1.jpg","/projetos/baixo-2.jpg","/projetos/baixo-3.jpg","/projetos/baixo-4.jpg","/projetos/baixo-5.jpg"];
 
-// --- Dados ---
-const projects = [
-  {
-    title: "Rocketseat",
-    tag: "TECH EDUCATION",
-    desc: "Identidade e direções visuais para maior plataforma de educação em programação da América Latina",
-    color: "#14B8A6",
-  },
-  {
-    title: "IA Para Devs",
-    tag: "ONLINE EVENT",
-    desc: "Branding de evento com foco em IA para +10k devs",
-    color: "#2DD4BF",
-  },
-  {
-    title: "XTENT Group",
-    tag: "CLOUD / AI / CYBER",
-    desc: "Sistema visual para grupo multi‑cloud e segurança",
-    color: "#22D3EE",
-  },
-  {
-    title: "Beep e‑wallet",
-    tag: "FINTECH",
-    desc: "Identidade visual para app financeiro",
-    color: "#67E8F9",
-  },
-];
-
-// Carrossel só de imagens (duas linhas — 5 em cima, 5 embaixo)
-const projectImagesTop = [
-  "/projetos/cima-1.jpg",
-  "/projetos/cima-2.jpg",
-  "/projetos/cima-3.jpg",
-  "/projetos/cima-4.jpg",
-  "/projetos/cima-5.jpg",
-];
-
-const projectImagesBottom = [
-  "/projetos/baixo-1.jpg",
-  "/projetos/baixo-2.jpg",
-  "/projetos/baixo-3.jpg",
-  "/projetos/baixo-4.jpg",
-  "/projetos/baixo-5.jpg",
-];
-
+/* pacotes */
 const packages = [
-  {
-    name: "Essencial",
-    price: "a partir de R$ 5.000",
-    duration: "até 3 semanas",
-    desc: "O essencial bem feito: logo completo, paleta, tipografia e arquivos prontos para usar.",
-    features: [
-      "Briefing guiado e direcionamento",
-      "2–3 rotas de logo com narrativa",
-      "Refinos até fechar a melhor versão",
-      "Paleta, tipografia e variações de uso",
-      "Arquivos finais (AI, SVG, PNG, PDF)",
-      "Kit social básico (perfis e covers)",
-    ],
-    notIncluded: ["Manual completo", "Pesquisa aprofundada"],
-    highlight: false,
-  },
-  {
-    name: "Estratégico",
-    price: "a partir de R$ 12.000",
-    duration: "3–5 semanas",
-    desc: "Para quem quer posicionamento claro e um sistema visual consistente em todos os pontos de contato.",
-    features: [
-      "Tudo do Essencial",
-      "Pesquisa de mercado & concorrência",
-      "Posicionamento e pilares de marca",
-      "Sistema visual completo (cores, grids, patterns)",
-      "Apresentação da marca (deck)",
-      "Templates editáveis (Figma/Canva)",
-      "Manual de uso (guia resumido)",
-    ],
-    notIncluded: [],
-    highlight: true,
-  },
-  {
-    name: "Premium",
-    price: "sob consulta",
-    duration: "5–8 semanas",
-    desc: "Branding de ponta a ponta: pesquisa profunda, arquitetura de marca e assets especiais.",
-    features: [
-      "Tudo do Estratégico",
-      "Workshop de descoberta",
-      "Pesquisa com audiência",
-      "Arquitetura de marca e sub‑marcas",
-      "Motion (logo animado) e mockups premium",
-      "Brand book completo",
-      "Acompanhamento na implementação",
-    ],
-    notIncluded: [],
-    highlight: false,
-  },
+  { name: "essencial",   price: "a partir de R$ 5.000", duration: "até 3 semanas",
+    desc: "o essencial bem feito: logo completo, paleta, tipografia e arquivos prontos para usar.",
+    features: ["briefing guiado e direcionamento","2–3 rotas de logo com narrativa","refinos até fechar a melhor versão","paleta, tipografia e variações de uso","arquivos finais (ai, svg, png, pdf)","kit social básico (perfis e covers)"],
+    notIncluded: ["manual completo","pesquisa aprofundada"], highlight: false },
+  { name: "estratégico", price: "a partir de R$ 12.000", duration: "3–5 semanas",
+    desc: "para quem quer posicionamento claro e um sistema visual consistente em todos os pontos de contato.",
+    features: ["tudo do essencial","pesquisa de mercado & concorrência","posicionamento e pilares de marca","sistema visual completo (cores, grids, patterns)","apresentação da marca (deck)","templates editáveis (figma/canva)","manual de uso (guia resumido)"],
+    notIncluded: [], highlight: true },
+  { name: "premium",     price: "sob consulta", duration: "5–8 semanas",
+    desc: "branding de ponta a ponta: pesquisa profunda, arquitetura de marca e assets especiais.",
+    features: ["tudo do estratégico","workshop de descoberta","pesquisa com audiência","arquitetura de marca e sub-marcas","motion (logo animado) e mockups premium","brand book completo","acompanhamento na implementação"],
+    notIncluded: [], highlight: false },
 ];
 
-// Tabela comparativa (Agências x Freelancers x Cleiton Avi)
+/* tabela comparativa */
 const compareRows = [
-  { label: "Preço", agencies: "$5k - 30k+", freelancers: "Variável", cleiton: "Fixo & transparente" },
-  { label: "Prazo", agencies: "3–9 meses", freelancers: "Incertos", cleiton: "2–6 semanas" },
-  { label: "Revisões", agencies: "Limitadas", freelancers: "Cobradas à parte", cleiton: "Ilimitadas*" },
-  { label: "Designer", agencies: "Júnior/Mid", freelancers: "Variável", cleiton: "Sênior dedicado" },
-  { label: "Processo", agencies: "Complexo", freelancers: "Informal", cleiton: "Estruturado & colaborativo" },
-  { label: "Comunicação", agencies: "Reuniões intermináveis", freelancers: "Irregular", cleiton: "Direta & consultiva" },
+  { label: "preço",        agencies: "$5k - 30k+", freelancers: "variável",        cleiton: "fixo & transparente" },
+  { label: "prazo",        agencies: "3–9 meses",   freelancers: "incertos",        cleiton: "2–6 semanas" },
+  { label: "revisões",     agencies: "limitadas",   freelancers: "cobradas à parte", cleiton: "ilimitadas*" },
+  { label: "designer",     agencies: "júnior/mid",  freelancers: "variável",        cleiton: "sênior dedicado" },
+  { label: "processo",     agencies: "complexo",    freelancers: "informal",        cleiton: "estruturado & colaborativo" },
+  { label: "comunicação",  agencies: "reuniões intermináveis", freelancers: "irregular", cleiton: "direta & consultiva" },
 ];
 
-// --- Pequena bateria de testes (dev only, não quebra a UI) ---
+/* testes dev (não rodam em produção) */
 function runDevTests() {
   try {
-    // Teste 1: pacotes obrigatórios presentes
-    const mustHave = ["Essencial", "Estratégico", "Premium"];
-    const namesOk = mustHave.every((n) => packages.some((p) => p.name === n));
-    if (!namesOk) throw new Error("Pacotes obrigatórios ausentes");
-
-    // Teste 2: garantir existência de caracteres acentuados nos dados
-    const hasAccents = packages.some((p) => /[^\u0000-\u007f]/.test(Object.values(p).join(" ")));
-    if (!hasAccents) throw new Error("Dados sem caracteres acentuados — verifique encoding/escapes");
-
-    // Teste 3: ícones locais definidos (existem e são funções)
-    const iconFns = [CheckIcon, XIcon, ArrowRightIcon, ClockIcon, TargetIcon, ZapIcon, AwardIcon];
-    const iconsOk = iconFns.every((fn) => typeof fn === "function");
-    if (!iconsOk) throw new Error("Ícones locais não definidos corretamente");
-
-    // Teste 4: existe ao menos 4 projetos para slider
-    if (!Array.isArray(projects) || projects.length < 4) throw new Error("Poucos projetos definidos");
-
-    // Teste 5: cada ícone gera um ReactElement válido
-    const elOk = iconFns.every((C) => React.isValidElement(<C />));
-    if (!elOk) throw new Error("Algum ícone não renderiza como React element");
-
-    // Teste 6: somente um pacote destacado no máximo
-    const highlightCount = packages.filter((p) => p.highlight).length;
-    if (highlightCount > 1) throw new Error("Mais de um pacote com highlight");
-
-    // Testes novos (comparativo)
-    // T7: existe tabela com 6+ linhas
-    if (!Array.isArray(compareRows) || compareRows.length < 6) throw new Error("Tabela comparativa incompleta");
-    // T8: a coluna Cleiton deve conter valores não vazios e o prazo conter '2–6'
-    const allCleitonOk = compareRows.every((r) => typeof r.cleiton === "string" && r.cleiton.length > 0);
-    if (!allCleitonOk) throw new Error("Coluna 'Cleiton Avi' incompleta");
-    const prazoRow = compareRows.find((r) => /Prazo/i.test(r.label));
-    if (!prazoRow || !/2–6/.test(prazoRow.cleiton)) throw new Error("Prazo esperado '2–6 semanas' não encontrado");
-
-    console.debug("[LP Tests] OK");
-  } catch (e) {
-    console.error("[LP Tests] Falha:", e);
-  }
+    const mustHave = ["essencial", "estratégico", "premium"];
+    if (!mustHave.every((n) => packages.some((p) => p.name === n))) throw new Error("pacotes obrigatórios ausentes");
+    const icons = [CheckIcon,XIcon,ArrowRightIcon,ClockIcon,TargetIcon,ZapIcon,AwardIcon];
+    if (!icons.every((C) => React.isValidElement(<C />))) throw new Error("ícones locais inválidos");
+    const prazoRow = compareRows.find((r) => /prazo/i.test(r.label));
+    if (!prazoRow || !/2–6/.test(prazoRow.cleiton)) throw new Error("linha de prazo inválida");
+    console.debug("[lp tests] ok");
+  } catch (e) { console.error("[lp tests] falha:", e); }
 }
 
-type FormState = {
-  name: string;
-  email: string;
-  phone: string;
-  company: string;
-  pack: string;
-  timeline: string;
-  budget: string;
-  vision: string;
-  challenge: string;
-};
+/* tipos */
+type FormState = { name: string; email: string; phone: string; company: string; pack: string; timeline: string; budget: string; vision: string; challenge: string; };
+
+/* carrossel — duas linhas, loop infinito, drag acelera */
 function CarouselProjetos() {
   const wrapRef = React.useRef<HTMLDivElement | null>(null);
   const topRef = React.useRef<HTMLDivElement | null>(null);
   const bottomRef = React.useRef<HTMLDivElement | null>(null);
 
-  // posições e velocidade (px/s)
-  const posTop = React.useRef(0);       // topo anda para a esquerda (valores negativos)
-  const posBottom = React.useRef(0);    // base anda para a esquerda também (a fila é invertida)
-  const baseTop = React.useRef(-60);    // velocidade base topo (px/s)
-  const baseBottom = React.useRef(-60); // velocidade base base (px/s) — IMPORTANTE: negativa
-  const dragVel = React.useRef(0);      // componente de velocidade extra (drag)
+  const posTop = React.useRef(0);
+  const posBottom = React.useRef(0);
+  const baseTop = React.useRef(-60);    // esquerda
+  const baseBottom = React.useRef(-60); // esquerda (fila invertida pra parecer direita)
+  const dragVel = React.useRef(0);
   const lastTime = React.useRef<number | null>(null);
 
-  // métricas do item — DEVEM bater com as classes abaixo
-  const ITEM_W = 320; // w-[320px]
-  const GAP = 24;     // gap-6 = 24px
-  const TOP_COUNT = projectImagesTop.length;    // 5
-  const BOT_COUNT = projectImagesBottom.length; // 5
-  const loopWTop = TOP_COUNT * ITEM_W + (TOP_COUNT - 1) * GAP;
-  const loopWBot = BOT_COUNT * ITEM_W + (BOT_COUNT - 1) * GAP;
+  const loopWTopRef = React.useRef(0);
+  const loopWBotRef = React.useRef(0);
+
+  const measureLoopWidth = React.useCallback((track: HTMLDivElement, count: number) => {
+    const first = track.querySelector<HTMLDivElement>(':scope > div');
+    const itemW = first?.getBoundingClientRect().width ?? 320;
+    const styles = getComputedStyle(track);
+    const gap = parseFloat(styles.columnGap || '0') || 24;
+    return count * itemW + (count - 1) * gap;
+  }, []);
+
+  React.useLayoutEffect(() => {
+    if (topRef.current) loopWTopRef.current = measureLoopWidth(topRef.current, projectImagesTop.length);
+    if (bottomRef.current) loopWBotRef.current = measureLoopWidth(bottomRef.current, projectImagesBottom.length);
+  }, [measureLoopWidth]);
 
   React.useEffect(() => {
     let raf = 0;
-
     const step = (t: number) => {
       if (lastTime.current == null) lastTime.current = t;
-      const dt = (t - lastTime.current) / 1000;
-      lastTime.current = t;
+      const dt = (t - lastTime.current) / 1000; lastTime.current = t;
 
-      // velocidade base + drag
-      posTop.current += (baseTop.current + dragVel.current) * dt;
+      posTop.current    += (baseTop.current + dragVel.current) * dt;
       posBottom.current += (baseBottom.current + dragVel.current) * dt;
 
-      // wrap infinito (para a ESQUERDA)
-      const wrapNeg = (pos: number, w: number) =>
-        pos <= -w ? pos + w : pos > 0 ? pos - w : pos;
+      const wrapNeg = (pos: number, w: number) => (pos <= -w ? pos + w : pos > 0 ? pos - w : pos);
+      posTop.current    = wrapNeg(posTop.current,    loopWTopRef.current || 1);
+      posBottom.current = wrapNeg(posBottom.current, loopWBotRef.current || 1);
 
-      posTop.current = wrapNeg(posTop.current, loopWTop);
-      posBottom.current = wrapNeg(posBottom.current, loopWBot); // <- igual ao topo
-
-      // aplica transform
-      if (topRef.current) topRef.current.style.transform = `translateX(${posTop.current}px)`;
+      if (topRef.current)    topRef.current.style.transform = `translateX(${posTop.current}px)`;
       if (bottomRef.current) bottomRef.current.style.transform = `translateX(${posBottom.current}px)`;
 
-      // inércia do drag
-      dragVel.current *= 0.92;
-      if (Math.abs(dragVel.current) < 0.05) dragVel.current = 0;
-
+      dragVel.current *= 0.92; if (Math.abs(dragVel.current) < 0.05) dragVel.current = 0;
       raf = requestAnimationFrame(step);
     };
-
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [loopWTop, loopWBot]);
+  }, []);
 
-  // drag acelera na direção do gesto
   const state = React.useRef({ dragging: false, lastX: 0, lastT: 0 });
-
   const onPointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
-    const el = wrapRef.current;
-    if (!el) return;
-    el.setPointerCapture(e.pointerId);
-    state.current.dragging = true;
-    state.current.lastX = e.clientX;
-    state.current.lastT = performance.now();
+    const el = wrapRef.current; if (!el) return;
+    el.setPointerCapture(e.pointerId); state.current.dragging = true;
+    state.current.lastX = e.clientX; state.current.lastT = performance.now();
     el.classList.add("cursor-grabbing");
   };
-
   const onPointerMove: React.PointerEventHandler<HTMLDivElement> = (e) => {
     if (!state.current.dragging) return;
-    const now = performance.now();
-    const dx = e.clientX - state.current.lastX;
-    const dt = (now - state.current.lastT) / 1000;
-    state.current.lastX = e.clientX;
-    state.current.lastT = now;
-
-    const boost = Math.max(-600, Math.min(600, dx / dt)); // px/s
+    const now = performance.now(); const dx = e.clientX - state.current.lastX; const dt = (now - state.current.lastT)/1000;
+    state.current.lastX = e.clientX; state.current.lastT = now;
+    const boost = Math.max(-600, Math.min(600, dx / dt));
     dragVel.current = dragVel.current * 0.6 + boost * 0.4;
   };
-
   const onPointerUp: React.PointerEventHandler<HTMLDivElement> = (e) => {
-    const el = wrapRef.current;
-    if (!el) return;
-    state.current.dragging = false;
-    el.releasePointerCapture(e.pointerId);
+    const el = wrapRef.current; if (!el) return;
+    state.current.dragging = false; el.releasePointerCapture(e.pointerId);
     el.classList.remove("cursor-grabbing");
   };
 
@@ -355,215 +151,158 @@ function CarouselProjetos() {
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
     >
-      {/* Linha de cima — anda ← */}
-      <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A]">
+      {/* topo — anda ← */}
+      <div className="relative overflow-hidden rounded-2xl bg-card">
         <div ref={topRef} className="flex gap-6 will-change-transform py-4 px-2" style={{ transform: "translateX(0)" }}>
           {[...projectImagesTop, ...projectImagesTop].map((src, i) => (
-            <div key={`t-${i}`} className="relative h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-[#111]">
-              <Image
-                src={src}
-                alt={`Projeto ${i + 1}`}
-                fill
-                className="object-cover transition-transform duration-300 hover:scale-[1.03]"
-                sizes="(max-width: 768px) 75vw, 320px"
-                priority={i < 2}
-              />
+            <div key={`t-${i}`} className="relative h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-background">
+              <Image src={src} alt={`projeto ${i + 1}`} fill className="object-cover transition-transform duration-300 hover:scale-[1.03]" sizes="(max-width: 768px) 75vw, 320px" priority={i < 2} />
             </div>
           ))}
         </div>
-        {/* gradientes */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0A0A0A] to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0A0A0A] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-card to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-card to-transparent" />
       </div>
 
-      {/* Linha de baixo — visualmente → (fila invertida, mas movimento real é ←) */}
-      <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A]">
-        <div
-          ref={bottomRef}
-          className="flex flex-row-reverse gap-6 will-change-transform py-4 px-2"
-          style={{ transform: "translateX(0)" }}
-        >
+      {/* base — visualmente → (fila invertida; movimento real ←) */}
+      <div className="relative overflow-hidden rounded-2xl bg-card">
+        <div ref={bottomRef} className="flex flex-row-reverse gap-6 will-change-transform py-4 px-2" style={{ transform: "translateX(0)" }}>
           {[...projectImagesBottom, ...projectImagesBottom].map((src, i) => (
-            <div key={`b-${i}`} className="relative h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-[#111]">
-              <Image
-                src={src}
-                alt={`Projeto ${i + 1}`}
-                fill
-                className="object-cover transition-transform duration-300 hover:scale-[1.03]"
-                sizes="(max-width: 768px) 75vw, 320px"
-                priority={i < 2}
-              />
+            <div key={`b-${i}`} className="relative h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-background">
+              <Image src={src} alt={`projeto ${i + 1}`} fill className="object-cover transition-transform duration-300 hover:scale-[1.03]" sizes="(max-width: 768px) 75vw, 320px" priority={i < 2} />
             </div>
           ))}
         </div>
-        {/* gradientes */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0A0A0A] to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0A0A0A] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-card to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-card to-transparent" />
       </div>
     </div>
   );
 }
 
+/* página */
 export default function CleitonAviLanding() {
   const [open, setOpen] = React.useState(false);
-const [form, setForm] = React.useState<FormState>({
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
-    pack: "",
-    timeline: "",
-    budget: "",
-    vision: "",
-    challenge: "",
-  });
+  const [form, setForm] = React.useState<FormState>({ name:"", email:"", phone:"", company:"", pack:"", timeline:"", budget:"", vision:"", challenge:"" });
 
   const submit = () => {
     const required = ["name","email","phone","company","pack","timeline","budget","vision"] as const;
-const missing = (required as Array<keyof FormState>).filter((k) => !form[k]);
-    if (missing.length) {
-      alert("Preencha os campos obrigatórios.");
-      return;
-    }
-    console.log("Form LP Cleiton Avi:", form);
-    alert("Recebi suas infos. Vou responder em até 24h úteis com os próximos passos.");
+    const missing = (required as Array<keyof FormState>).filter((k) => !form[k]);
+    if (missing.length) { alert("preencha os campos obrigatórios."); return; }
+    console.log("form lp:", form);
+    alert("recebi suas infos. retorno em até 24h úteis com próximos passos.");
     setOpen(false);
-    setForm({ name: "", email: "", phone: "", company: "", pack: "", timeline: "", budget: "", vision: "", challenge: "" });
+    setForm({ name:"", email:"", phone:"", company:"", pack:"", timeline:"", budget:"", vision:"", challenge:"" });
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white antialiased selection:bg-[#2DD4BF]/30 selection:text-white">
-      {/* NAV */}
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#0A0A0A]/80 backdrop-blur-xl">
+    <div className="min-h-screen bg-background text-foreground antialiased selection:bg-primary/30">
+      {/* nav */}
+      <header className="fixed inset-x-0 top-0 z-50 border-b bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-[#14B8A6] to-[#2DD4BF] shadow-[0_0_40px_-10px] shadow-[#2DD4BF]/40">
+            <div className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-[0_0_40px_-10px] shadow-primary/40">
               <svg width="18" height="18" viewBox="0 0 40 40" fill="none" aria-hidden>
-                <circle cx="20" cy="20" r="18" stroke="#fff" strokeOpacity=".25" />
-                <path d="M20 8L32 20L20 32L8 20L20 8Z" fill="#fff" fillOpacity=".12" />
-                <path d="M20 8L32 20L20 32L8 20L20 8Z" stroke="#fff" strokeOpacity=".4" />
+                <circle cx="20" cy="20" r="18" stroke="currentColor" className="opacity-25" />
+                <path d="M20 8L32 20L20 32L8 20L20 8Z" fill="currentColor" className="opacity-20" />
+                <path d="M20 8L32 20L20 32L8 20L20 8Z" stroke="currentColor" className="opacity-40" />
               </svg>
             </div>
-            <span className="text-lg font-medium tracking-tight">Cleiton Avi</span>
+            <span className="text-lg font-medium tracking-tight">cleiton avi</span>
           </div>
           <div className="hidden items-center gap-6 md:flex">
-            <a href="#processo" className="text-sm text-white/70 transition hover:text-white">Processo</a>
-            <a href="#projetos" className="text-sm text-white/70 transition hover:text-white">Projetos</a>
-            <a href="#pacotes" className="text-sm text-white/70 transition hover:text-white">Pacotes</a>
-            <a href="#comparativo" className="text-sm text-white/70 transition hover:text-white">Comparativo</a>
+            <a href="#processo" className="text-sm text-muted-foreground transition hover:text-foreground">processo</a>
+            <a href="#projetos" className="text-sm text-muted-foreground transition hover:text-foreground">projetos</a>
+            <a href="#pacotes" className="text-sm text-muted-foreground transition hover:text-foreground">pacotes</a>
+            <a href="#comparativo" className="text-sm text-muted-foreground transition hover:text-foreground">comparativo</a>
           </div>
-          <Button size="lg" onClick={() => setOpen(true)} className="rounded-md bg-white px-5 text-black hover:bg-white/90 uppercase tracking-wide">
-            Começar projeto <ArrowRightIcon className="ml-2 h-4 w-4" />
+          <Button size="lg" onClick={() => setOpen(true)} className="rounded-md bg-foreground px-5 text-background hover:opacity-90">
+            começar projeto <ArrowRightIcon className="ml-2 h-4 w-4" />
           </Button>
         </div>
       </header>
 
-      {/* HERO */}
+      {/* hero */}
       <section className="px-6 pt-40 pb-24 md:pb-36">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-wide text-white/70">
-            <span>Desde 2012 criando marcas que performam</span>
+          <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border bg-card px-4 py-2 text-xs uppercase tracking-wide text-muted-foreground">
+            <span>desde 2012 criando marcas que performam</span>
           </div>
-          <h1 className="text-balance text-5xl leading-none tracking-tight text-white sm:text-7xl md:text-8xl">
-            Design de marca
-            <span className="block text-white">sem surpresas</span>
+          <h1 className="text-balance text-5xl leading-none tracking-tight sm:text-7xl md:text-8xl">
+            design de marca
+            <span className="block">sem surpresas</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-pretty text-base text-white/70">
-            {"Pacotes claros, processo transparente e entrega garantida. Sua identidade profissional pronta para elevar percepção, diferenciação e confiança."}
+          <p className="mx-auto mt-6 max-w-2xl b2 text-muted-foreground">
+            pacotes claros, processo transparente e entrega garantida. sua identidade profissional pronta para elevar percepção, diferenciação e confiança.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button size="lg" className="rounded-md bg-white px-6 text-black hover:bg-white/90 uppercase tracking-wide" onClick={() => setOpen(true)}>
-              Ver pacotes & iniciar <ArrowRightIcon className="ml-2 h-4 w-4" />
+            <Button size="lg" className="rounded-md bg-foreground px-6 text-background hover:opacity-90" onClick={() => setOpen(true)}>
+              ver pacotes e iniciar <ArrowRightIcon className="ml-2 h-4 w-4" />
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white/20 bg-transparent text-white hover:border-[#2DD4BF] hover:text-[#2DD4BF] hover:bg-white/5 uppercase tracking-wide"
-              onClick={() => {
-                document.getElementById("processo")?.scrollIntoView({ behavior: "smooth" });
-              }}
-            >
-              Como funciona
+            <Button size="lg" variant="outline" className="border-muted bg-transparent text-foreground hover:border-primary hover:text-primary hover:bg-card" onClick={() => document.getElementById("processo")?.scrollIntoView({ behavior: "smooth" })}>
+              como funciona
             </Button>
           </div>
         </div>
       </section>
 
-      {/* BENEFÍCIOS */}
-      <section className="border-y border-white/5 bg-[#111111] px-6 py-24">
+      {/* benefícios */}
+      <section className="border-y bg-card px-6 py-24">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-3">
           {[
-            { icon: <ZapIcon className="h-8 w-8 text-[#2DD4BF]" />, title: "Velocidade real", desc: "De 2 a 8 semanas conforme o pacote. Sem novela, sem atrasos." },
-            { icon: <TargetIcon className="h-8 w-8 text-[#2DD4BF]" />, title: "100% estratégico", desc: "Cada decisão visual conecta com objetivo de negócio." },
-            { icon: <AwardIcon className="h-8 w-8 text-[#2DD4BF]" />, title: "Qualidade sênior", desc: "Desde 2012 em design. Zero projetos reprovados." },
+            { icon: <ZapIcon className="h-8 w-8 text-primary" />, title: "velocidade real", desc: "de 2 a 8 semanas conforme o pacote. sem novela, sem atrasos." },
+            { icon: <TargetIcon className="h-8 w-8 text-primary" />, title: "100% estratégico", desc: "cada decisão visual conecta com objetivo de negócio." },
+            { icon: <AwardIcon className="h-8 w-8 text-primary" />, title: "qualidade sênior", desc: "desde 2012 em design. zero projetos reprovados." },
           ].map((b, i) => (
-            <Card key={i} className="border-white/10 bg-[#0A0A0A]">
+            <Card key={i} className="bg-background">
               <CardContent className="space-y-3 p-6">
                 {b.icon}
-                <h3 className="text-xl text-white">{b.title}</h3>
-                <p className="text-sm text-white/70">{b.desc}</p>
+                <h3 className="text-xl">{b.title}</h3>
+                <p className="b3 text-muted-foreground">{b.desc}</p>
               </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-{/* PROJETOS — duas linhas de imagens, sem textos, com drag que acelera */}
-<section id="projetos" className="px-6 py-24">
-  <div className="mx-auto max-w-7xl">
-    <h2 className="mb-10 text-4xl tracking-tight text-white sm:text-5xl">
-      Trabalhos selecionados
-    </h2>
+      {/* projetos */}
+      <section id="projetos" className="px-6 py-24">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="mb-10 h2">trabalhos selecionados</h2>
+          <CarouselProjetos />
+        </div>
+      </section>
 
-    <CarouselProjetos />
-  </div>
-</section>
-
-
-
-
-      {/* PACOTES */}
+      {/* pacotes */}
       <section id="pacotes" className="px-6 py-24">
         <div className="mx-auto max-w-7xl">
           <div className="mb-14 text-center">
-            <h2 className="text-4xl tracking-tight text-white sm:text-5xl">Escolha o formato ideal</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm text-white/70">{"Todos os pacotes seguem meu processo sênior, com alinhamento claro e garantia de satisfação."}</p>
+            <h2 className="h2">escolha o formato ideal</h2>
+            <p className="mx-auto mt-3 max-w-2xl b3 text-muted-foreground">todos os pacotes seguem meu processo sênior, com alinhamento claro e garantia de satisfação.</p>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {packages.map((pkg) => (
-              <Card key={pkg.name} className={`relative border ${pkg.highlight ? "border-[#2DD4BF]/60" : "border-white/10"} bg-[#111111]`}>
-                {pkg.highlight && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#2DD4BF] px-3 py-1 text-[11px] font-medium text-black shadow-lg">Mais escolhido</div>
-                )}
+              <Card key={pkg.name} className={`relative bg-card ${pkg.highlight ? "outline outline-1 outline-primary/60" : ""}`}>
+                {pkg.highlight && <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-[11px] font-medium text-primary-foreground shadow-lg">mais escolhido</div>}
                 <CardHeader>
-                  <CardTitle className="text-2xl text-white">{pkg.name}</CardTitle>
-                  <div className="mt-1 text-3xl text-white">{pkg.price}</div>
-                  <div className="mt-2 flex items-center gap-2 text-xs text-white/70">
+                  <CardTitle className="text-2xl">{pkg.name}</CardTitle>
+                  <div className="mt-1 text-3xl">{pkg.price}</div>
+                  <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                     <ClockIcon className="h-3.5 w-3.5" /> {pkg.duration}
                   </div>
-                  <p className="mt-3 text-sm text-white/70">{pkg.desc}</p>
+                  <p className="mt-3 b3 text-muted-foreground">{pkg.desc}</p>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <ul className="space-y-2">
-                    {pkg.features.map((f) => (
-                      <li key={f} className="flex gap-2 text-sm text-white/80"><CheckIcon className="mt-0.5 h-4 w-4 text-[#2DD4BF]" />{f}</li>
-                    ))}
+                    {pkg.features.map((f) => (<li key={f} className="flex gap-2 b3"><CheckIcon className="mt-0.5 h-4 w-4 text-primary" />{f}</li>))}
                   </ul>
                   {pkg.notIncluded.length > 0 && (
-                    <div className="mt-4 border-t border-white/10 pt-4">
-                      {pkg.notIncluded.map((n) => (
-                        <div key={n} className="flex gap-2 text-sm text-white/50"><XIcon className="mt-0.5 h-4 w-4" />{n}</div>
-                      ))}
+                    <div className="mt-4 border-t pt-4">
+                      {pkg.notIncluded.map((n) => (<div key={n} className="flex gap-2 b3 text-muted-foreground"><XIcon className="mt-0.5 h-4 w-4" />{n}</div>))}
                     </div>
                   )}
-                  <Button
-                    onClick={() => {
-                      setOpen(true);
-                      setForm((prev) => ({ ...prev, pack: pkg.name }));
-                    }}
-                    className={`mt-4 w-full uppercase tracking-wide ${pkg.highlight ? "bg-white text-black hover:bg-white/90" : "bg-transparent text-white hover:bg-white/5 border border-white/30"}`}
-                  >
-                    Escolher {pkg.name}
+                  <Button onClick={() => { setOpen(true); setForm((prev) => ({ ...prev, pack: pkg.name })); }} className={`mt-4 w-full ${pkg.highlight ? "bg-foreground text-background hover:opacity-90" : "bg-transparent text-foreground hover:bg-card border"}`}>
+                    escolher {pkg.name}
                   </Button>
                 </CardContent>
               </Card>
@@ -572,63 +311,62 @@ const missing = (required as Array<keyof FormState>).filter((k) => !form[k]);
         </div>
       </section>
 
-      {/* COMPARATIVO */}
+      {/* comparativo */}
       <section id="comparativo" className="px-6 py-24">
         <div className="mx-auto max-w-7xl">
           <div className="mb-10 text-center">
-            <h2 className="text-4xl tracking-tight text-white sm:text-5xl">Por que escolher pacotes fixos?</h2>
-            <p className="mt-2 text-sm text-white/70">Compare e veja a diferença</p>
+            <h2 className="h2">por que escolher pacotes fixos?</h2>
+            <p className="mt-2 b3 text-muted-foreground">compare e veja a diferença</p>
           </div>
-
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0B0F14]">
-            <table className="w-full border-collapse text-sm">
+          <div className="overflow-hidden rounded-2xl bg-card shadow-card">
+            <table className="w-full border-collapse b3">
               <thead>
-                <tr className="bg-[#0E1620] text-white/80">
+                <tr className="bg-accent text-foreground/90">
                   <th className="w-1/4 px-5 py-4 text-left font-medium">&nbsp;</th>
-                  <th className="w-1/4 px-5 py-4 text-left font-medium text-white/70">Agências tradicionais</th>
-                  <th className="w-1/4 px-5 py-4 text-left font-medium text-white/70">Freelancers</th>
-                  <th className="w-1/4 px-5 py-4 text-left font-semibold bg-[#14B8A6] text-black">Cleiton Avi</th>
+                  <th className="w-1/4 px-5 py-4 text-left font-medium text-muted-foreground">agências tradicionais</th>
+                  <th className="w-1/4 px-5 py-4 text-left font-medium text-muted-foreground">freelancers</th>
+                  <th className="w-1/4 px-5 py-4 text-left font-semibold bg-primary text-primary-foreground">cleiton avi</th>
                 </tr>
               </thead>
               <tbody>
                 {compareRows.map((r, idx) => (
-                  <tr key={r.label} className={idx % 2 === 0 ? "bg-[#0A1118]" : "bg-[#0C121A]"}>
-                    <td className="px-5 py-4 text-white/80">{r.label}</td>
-                    <td className="px-5 py-4 text-white/70">{r.agencies}</td>
-                    <td className="px-5 py-4 text-white/70">{r.freelancers}</td>
-                    <td className="px-5 py-4 font-medium text-[#2DD4BF]">{r.cleiton}</td>
+                  <tr key={r.label} className={idx % 2 === 0 ? "bg-background" : "bg-card"}>
+                    <td className="px-5 py-4">{r.label}</td>
+                    <td className="px-5 py-4 text-muted-foreground">{r.agencies}</td>
+                    <td className="px-5 py-4 text-muted-foreground">{r.freelancers}</td>
+                    <td className="px-5 py-4 font-medium text-primary">{r.cleiton}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <div className="border-t border-white/10 px-5 py-3 text-center text-xs text-white/50">*Revisões ilimitadas no conceito escolhido durante a fase de desenvolvimento.</div>
+            <div className="border-t px-5 py-3 text-center text-xs text-muted-foreground">*revisões ilimitadas no conceito escolhido durante a fase de desenvolvimento.</div>
           </div>
         </div>
       </section>
 
-      {/* PROCESSO */}
-      <section id="processo" className="border-y border-white/5 bg-[#111111] px-6 py-24">
+      {/* processo */}
+      <section id="processo" className="border-y bg-card px-6 py-24">
         <div className="mx-auto max-w-7xl">
           <div className="mb-14 text-center">
-            <h2 className="text-4xl tracking-tight text-white sm:text-5xl">Como funciona o processo</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm text-white/70">Transparente, colaborativo e focado em resultado.</p>
+            <h2 className="h2">como funciona o processo</h2>
+            <p className="mx-auto mt-3 max-w-2xl b3 text-muted-foreground">transparente, colaborativo e focado em resultado.</p>
           </div>
           <div className="grid grid-cols-1 gap-4">
             {[
-              { step: "01", title: "Briefing estratégico", dur: "1–2 dias", desc: "Mergulho nos objetivos, público, contexto e restrições. É consultivo, não só um formulário." },
-              { step: "02", title: "Pesquisa & estratégia", dur: "3–5 dias", desc: "Leitura de mercado e concorrência. Definição de posicionamento antes de mover um pixel." },
-              { step: "03", title: "Rotas iniciais", dur: "5–7 dias", desc: "Apresento 2–3 rotas com narrativas visuais distintas. Escolhemos a direção." },
-              { step: "04", title: "Refino", dur: "5–10 dias", desc: "Evoluímos juntos até a melhor versão. Participação ativa em cada decisão." },
-              { step: "05", title: "Entrega & onboard", dur: "2–3 dias", desc: "Arquivos, diretrizes e materiais organizados. Explico como aplicar e manter a consistência." },
+              { step: "01", title: "briefing estratégico", dur: "1–2 dias", desc: "mergulho nos objetivos, público, contexto e restrições. é consultivo, não só um formulário." },
+              { step: "02", title: "pesquisa e estratégia", dur: "3–5 dias", desc: "leitura de mercado e concorrência. definição de posicionamento antes de mover um pixel." },
+              { step: "03", title: "rotas iniciais", dur: "5–7 dias", desc: "apresento 2–3 rotas com narrativas visuais distintas. escolhemos a direção." },
+              { step: "04", title: "refino", dur: "5–10 dias", desc: "evoluímos juntos até a melhor versão. participação ativa em cada decisão." },
+              { step: "05", title: "entrega e onboard", dur: "2–3 dias", desc: "arquivos, diretrizes e materiais organizados. explico como aplicar e manter a consistência." },
             ].map((s) => (
-              <div key={s.step} className="flex items-start gap-4 rounded-xl border border-white/10 bg-[#0A0A0A] p-6">
-                <div className="grid h-14 w-14 place-items-center rounded-full bg-[#2DD4BF] text-black">{s.step}</div>
+              <div key={s.step} className="flex items-start gap-4 rounded-xl bg-background p-6">
+                <div className="grid h-14 w-14 place-items-center rounded-full bg-primary text-primary-foreground">{s.step}</div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between gap-4">
-                    <h3 className="text-xl text-white">{s.title}</h3>
-                    <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] text-white/70">{s.dur}</span>
+                    <h3 className="text-xl">{s.title}</h3>
+                    <span className="rounded-full border px-3 py-1 text-[11px] text-muted-foreground">{s.dur}</span>
                   </div>
-                  <p className="mt-2 text-sm text-white/70">{s.desc}</p>
+                  <p className="mt-2 b3 text-muted-foreground">{s.desc}</p>
                 </div>
               </div>
             ))}
@@ -636,63 +374,49 @@ const missing = (required as Array<keyof FormState>).filter((k) => !form[k]);
         </div>
       </section>
 
-      {/* CTA FINAL */}
+      {/* cta final */}
       <section className="relative px-6 py-24">
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,#0A1A1A_0%,#1A3A3A_100%)]" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,hsl(var(--background))_0%,hsl(var(--card))_100%)]" />
         <div className="mx-auto max-w-4xl text-center">
-          <h3 className="text-balance text-4xl tracking-tight text-white sm:text-5xl">Pronto para elevar sua marca?</h3>
-          <p className="mx-auto mt-3 max-w-2xl text-sm text-white/70">{"Envie suas informações e eu retorno em até 24h úteis com os próximos passos."}</p>
-          <Button size="lg" className="mt-6 rounded-md bg-white px-6 text-black hover:bg-white/90 uppercase tracking-wide" onClick={() => setOpen(true)}>
-            Iniciar conversa <ArrowRightIcon className="ml-2 h-4 w-4" />
+          <h3 className="text-balance h3">pronto para elevar sua marca?</h3>
+          <p className="mx-auto mt-3 max-w-2xl b3 text-muted-foreground">envie suas informações e eu retorno em até 24h úteis com os próximos passos.</p>
+          <Button size="lg" className="mt-6 rounded-md bg-foreground px-6 text-background hover:opacity-90" onClick={() => setOpen(true)}>
+            iniciar conversa <ArrowRightIcon className="ml-2 h-4 w-4" />
           </Button>
         </div>
       </section>
 
-      {/* RODAPÉ */}
-      <footer className="border-t-2 border-[#00FFD1] bg-[#0A0A0A] px-6 py-10 text-white">
+      {/* rodapé */}
+      <footer className="border-t bg-background px-6 py-10">
         <div className="mx-auto max-w-7xl text-center">
-          <div className="text-2xl">Cleiton Avi</div>
-          <p className="mt-1 text-sm/relaxed opacity-80">{"Designer de Marcas • desde 2012"}</p>
-          <p className="mt-1 text-xs opacity-70">© {new Date().getFullYear()} Cleiton Avi. Todos os direitos reservados.</p>
+          <div className="text-2xl">cleiton avi</div>
+          <p className="mt-1 b3 text-muted-foreground">designer de marcas • desde 2012</p>
+          <p className="mt-1 text-xs text-muted-foreground">© {new Date().getFullYear()} cleiton avi. todos os direitos reservados.</p>
         </div>
       </footer>
 
-      {/* FORMULÁRIO */}
+      {/* formulário */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <span />
-        </DialogTrigger>
-        <DialogContent className="max-h-[90vh] overflow-y-auto border-white/10 bg-[#0A0A0A] text-white sm:max-w-lg">
+        <DialogTrigger asChild><span /></DialogTrigger>
+        <DialogContent className="max-h-[90vh] overflow-y-auto bg-card text-foreground sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-white">Agendar conversa inicial</DialogTitle>
-            <p className="mt-1 text-sm text-white/70">{"Primeiro, me conte rapidamente sobre você e sua marca."}</p>
+            <DialogTitle className="text-2xl">agendar conversa inicial</DialogTitle>
+            <p className="mt-1 b3 text-muted-foreground">primeiro, me conte rapidamente sobre você e sua marca.</p>
           </DialogHeader>
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-4">
-              <div>
-                <Label htmlFor="name">Nome*</Label>
-                <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="border-white/15 bg-transparent focus-visible:ring-[#2DD4BF]" />
-              </div>
-              <div>
-                <Label htmlFor="email">E-mail*</Label>
-                <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="border-white/15 bg-transparent focus-visible:ring-[#2DD4BF]" />
-              </div>
-              <div>
-                <Label htmlFor="phone">Telefone / WhatsApp*</Label>
-                <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="border-white/15 bg-transparent focus-visible:ring-[#2DD4BF]" />
-              </div>
-              <div>
-                <Label htmlFor="company">Empresa / Projeto*</Label>
-                <Input id="company" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} className="border-white/15 bg-transparent focus-visible:ring-[#2DD4BF]" />
-              </div>
+              <div><Label htmlFor="name">nome*</Label><Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-background focus-visible:ring-primary" /></div>
+              <div><Label htmlFor="email">e-mail*</Label><Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-background focus-visible:ring-primary" /></div>
+              <div><Label htmlFor="phone">telefone / whatsapp*</Label><Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-background focus-visible:ring-primary" /></div>
+              <div><Label htmlFor="company">empresa / projeto*</Label><Input id="company" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} className="bg-background focus-visible:ring-primary" /></div>
             </div>
 
             <div>
-              <Label>Qual pacote te interessa?</Label>
+              <Label>qual pacote te interessa?</Label>
               <RadioGroup value={form.pack} onValueChange={(v) => setForm({ ...form, pack: v })} className="mt-2 grid gap-2">
-                {["Essencial", "Estratégico", "Premium", "Ainda não sei"].map((opt) => (
-                  <div key={opt} className="flex items-center gap-2 rounded-md border border-white/15 p-3">
-                    <RadioGroupItem value={opt} id={`pack-${opt}`} className="text-[#2DD4BF]" />
+                {["essencial","estratégico","premium","ainda não sei"].map((opt) => (
+                  <div key={opt} className="flex items-center gap-2 rounded-md border p-3">
+                    <RadioGroupItem value={opt} id={`pack-${opt}`} className="text-primary" />
                     <Label htmlFor={`pack-${opt}`} className="cursor-pointer">{opt}</Label>
                   </div>
                 ))}
@@ -700,32 +424,23 @@ const missing = (required as Array<keyof FormState>).filter((k) => !form[k]);
             </div>
 
             <div>
-              <Label htmlFor="timeline">{"Quando você quer lançar a nova marca?*"}</Label>
-              <select
-                id="timeline"
-                value={form.timeline}
-                onChange={(e) => setForm({ ...form, timeline: e.target.value })}
-                className="mt-2 w-full rounded-md border border-white/15 bg-[#111111] p-3 text-sm outline-none focus:border-[#2DD4BF]"
-              >
-                <option value="">Escolha…</option>
-                <option value="ASAP">Imediatamente (ASAP)</option>
+              <Label htmlFor="timeline">quando você quer lançar a nova marca?*</Label>
+              <select id="timeline" value={form.timeline} onChange={(e) => setForm({ ...form, timeline: e.target.value })} className="mt-2 w-full rounded-md border bg-background p-3 b3 outline-none focus:border-primary">
+                <option value="">escolha…</option>
+                <option value="ASAP">imediatamente (asap)</option>
                 <option value="1–2 semanas">1–2 semanas</option>
-                <option value="Próximo mês">Próximo mês</option>
+                <option value="próximo mês">próximo mês</option>
                 <option value="2–3 meses">2–3 meses</option>
-                <option value="Planejando">Ainda planejando</option>
+                <option value="planejando">ainda planejando</option>
               </select>
             </div>
 
             <div>
-              <Label>Orçamento disponível*</Label>
+              <Label>orçamento disponível*</Label>
               <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {["Até R$ 7.000", "R$ 7–12 mil", "R$ 12–20 mil", "Acima de R$ 20 mil"].map((b) => (
-                  <button
-                    key={b}
-                    onClick={() => setForm({ ...form, budget: b })}
-                    type="button"
-                    className={`rounded-md border p-3 text-sm transition ${form.budget === b ? "border-white bg-white text-black" : "border-white/15 bg-transparent text-white hover:bg-white/5"}`}
-                  >
+                {["até R$ 7.000","R$ 7–12 mil","R$ 12–20 mil","acima de R$ 20 mil"].map((b) => (
+                  <button key={b} onClick={() => setForm({ ...form, budget: b })} type="button"
+                    className={`rounded-md border p-3 b3 transition ${form.budget === b ? "bg-foreground text-background" : "bg-transparent hover:bg-card"}`}>
                     {b}
                   </button>
                 ))}
@@ -733,31 +448,19 @@ const missing = (required as Array<keyof FormState>).filter((k) => !form[k]);
             </div>
 
             <div>
-              <Label htmlFor="vision">{"Qual visão você quer comunicar?*"}</Label>
-              <Textarea
-                id="vision"
-                value={form.vision}
-                onChange={(e) => setForm({ ...form, vision: e.target.value })}
-                className="mt-2 min-h-[120px] border-white/15 bg-transparent focus-visible:ring-[#2DD4BF]"
-                placeholder={"Valores, público e o que te torna diferente (2–3 frases)."}
-              />
+              <Label htmlFor="vision">qual visão você quer comunicar?*</Label>
+              <Textarea id="vision" value={form.vision} onChange={(e) => setForm({ ...form, vision: e.target.value })} className="mt-2 min-h-[120px] bg-background focus-visible:ring-primary" placeholder="valores, público e o que te torna diferente (2–3 frases)." />
             </div>
 
             <div>
-              <Label htmlFor="challenge">Maior desafio hoje <span className="text-white/50">(opcional)</span></Label>
-              <Textarea
-                id="challenge"
-                value={form.challenge}
-                onChange={(e) => setForm({ ...form, challenge: e.target.value })}
-                className="mt-2 min-h-[100px] border-white/15 bg-transparent focus-visible:ring-[#2DD4BF]"
-                placeholder={"Ex.: não se diferencia, comunicação inconsistente, visual datado…"}
-              />
+              <Label htmlFor="challenge">maior desafio hoje <span className="text-muted-foreground">(opcional)</span></Label>
+              <Textarea id="challenge" value={form.challenge} onChange={(e) => setForm({ ...form, challenge: e.target.value })} className="mt-2 min-h-[100px] bg-background focus-visible:ring-primary" placeholder="ex.: não se diferencia, comunicação inconsistente, visual datado…" />
             </div>
 
-            <Button size="lg" className="w-full rounded-full bg-white text-black hover:bg-white/90 uppercase tracking-wide" onClick={submit}>
-              Enviar e agendar
+            <Button size="lg" className="w-full rounded-full bg-foreground text-background hover:opacity-90" onClick={submit}>
+              enviar e agendar
             </Button>
-            <p className="-mt-2 text-center text-xs text-white/60">{"Retorno em até 24h úteis com os próximos passos."}</p>
+            <p className="-mt-2 text-center text-xs text-muted-foreground">retorno em até 24h úteis com os próximos passos.</p>
           </div>
         </DialogContent>
       </Dialog>
@@ -765,24 +468,10 @@ const missing = (required as Array<keyof FormState>).filter((k) => !form[k]);
   );
 }
 
-// Executa os testes apenas em ambientes de desenvolvimento (sem ruído em produção)
+/* dev only */
 function isDevEnv() {
-  if (
-    typeof process !== "undefined" &&
-    process.env &&
-    process.env.NODE_ENV &&
-    process.env.NODE_ENV !== "production"
-  ) {
-    return true;
-  }
-  if (
-    typeof location !== "undefined" &&
-    /localhost|127\.0\.0\.1/.test(location.hostname)
-  ) {
-    return true;
-  }
+  if (typeof process !== "undefined" && process.env && process.env.NODE_ENV && process.env.NODE_ENV !== "production") return true;
+  if (typeof location !== "undefined" && /localhost|127\.0\.0\.1/.test(location.hostname)) return true;
   return false;
 }
-
-
 if (typeof window !== "undefined" && isDevEnv()) runDevTests();
