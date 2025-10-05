@@ -379,11 +379,11 @@ function CarouselProjetos() {
 
       {/* Linha de baixo — → direita (SEM BORDA) */}
       <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A]">
-        <div
+       <div
   ref={bottomRef}
   className="flex flex-row-reverse gap-6 will-change-transform py-4 px-2"
   style={{ transform: "translateX(0)" }}
-        >
+>
           {[...projectImagesBottom, ...projectImagesBottom].map((src, i) => (
             <div key={`b-${i}`} className="relative h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-[#111]">
               <Image
