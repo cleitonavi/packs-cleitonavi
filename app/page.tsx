@@ -19,6 +19,44 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 
 /* ================================
+   Scroll-reveal hook
+==================================*/
+function useInView(threshold = 0.15) {
+  const ref = React.useRef<HTMLDivElement | null>(null);
+  const [visible, setVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+
+  return { ref, visible };
+}
+
+function Reveal({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const { ref, visible } = useInView();
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(28px)',
+        transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ================================
    Ícones SVG locais (simples)
 ==================================*/
 type IconProps = React.SVGProps<SVGSVGElement> & { className?: string };
@@ -29,8 +67,8 @@ const base = (p: IconProps) => ({
   fill: 'none',
   stroke: 'currentColor',
   strokeWidth: 2,
-  strokeLinecap: 'round',
-  strokeLinejoin: 'round',
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
   ...p,
 });
 function CheckIcon(p: IconProps) { return (<svg {...base(p)}><path d="M20 6 9 17 4 12"/></svg>); }
@@ -133,8 +171,8 @@ function CarouselProjetos() {
 
   const posTop = React.useRef(0);
   const posBottom = React.useRef(0);
-  const baseTop = React.useRef(-60);     // ←
-  const baseBottom = React.useRef(-60);  // também ← (usamos fila invertida para parecer →)
+  const baseTop = React.useRef(-60);
+  const baseBottom = React.useRef(-60);
   const dragVel = React.useRef(0);
   const lastTime = React.useRef<number | null>(null);
 
@@ -198,13 +236,13 @@ function CarouselProjetos() {
   return (
     <div
       ref={wrapRef}
-      className="space-y-4 select-none"
+      className="space-y-4 select-none cursor-grab"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
     >
-      {/* Cima (visual ←) */}
+      {/* Cima */}
       <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A]">
         <div ref={topRef} className="flex gap-6 will-change-transform py-4 px-2" style={{ transform: 'translateX(0)' }}>
           {[...projectImagesTop, ...projectImagesTop].map((src, i) => (
@@ -213,7 +251,7 @@ function CarouselProjetos() {
                 src={src}
                 alt={`Projeto ${i + 1}`}
                 fill
-                className="object-cover transition-transform duration-300 hover:scale-[1.03]"
+                className="object-cover transition-transform duration-500 hover:scale-[1.05]"
                 sizes="(max-width: 768px) 75vw, 320px"
                 priority={i < 2}
               />
@@ -224,7 +262,7 @@ function CarouselProjetos() {
         <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0A0A0A] to-transparent" />
       </div>
 
-      {/* Baixo (usamos flex-row-reverse para parecer →) */}
+      {/* Baixo */}
       <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A]">
         <div
           ref={bottomRef}
@@ -237,7 +275,7 @@ function CarouselProjetos() {
                 src={src}
                 alt={`Projeto ${i + 1}`}
                 fill
-                className="object-cover transition-transform duration-300 hover:scale-[1.03]"
+                className="object-cover transition-transform duration-500 hover:scale-[1.05]"
                 sizes="(max-width: 768px) 75vw, 320px"
                 priority={i < 2}
               />
@@ -283,8 +321,18 @@ export default function CleitonAviLanding() {
     setForm({ name: '', email: '', phone: '', company: '', pack: '', timeline: '', budget: '', vision: '', challenge: '' });
   };
 
+  function sentenceCase(input: string) {
+    if (!input) return '';
+    const s = input.trim();
+    if (/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(s)) {
+      return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+    }
+    return s;
+  }
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white antialiased selection:bg-[#00CFAF]/30 selection:text-white">
+
       {/* NAV */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#0A0A0A]/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -299,16 +347,15 @@ export default function CleitonAviLanding() {
             <span className="text-lg font-medium tracking-tight">Cleiton Avi</span>
           </div>
           <div className="hidden items-center gap-6 md:flex">
-            <a href="#processo" className="text-sm text-white/70 transition hover:text-white">Processo</a>
-            <a href="#projetos" className="text-sm text-white/70 transition hover:text-white">Projetos</a>
-            <a href="#pacotes" className="text-sm text-white/70 transition hover:text-white">Pacotes</a>
-            <a href="#comparativo" className="text-sm text-white/70 transition hover:text-white">Comparativo</a>
+            <a href="#processo" className="text-sm text-white/60 transition-colors duration-200 hover:text-white">Processo</a>
+            <a href="#projetos" className="text-sm text-white/60 transition-colors duration-200 hover:text-white">Projetos</a>
+            <a href="#pacotes" className="text-sm text-white/60 transition-colors duration-200 hover:text-white">Pacotes</a>
+            <a href="#comparativo" className="text-sm text-white/60 transition-colors duration-200 hover:text-white">Comparativo</a>
           </div>
-          {/* CTA com alto contraste (turquesa) */}
           <Button
             size="lg"
             onClick={() => setOpen(true)}
-            className="rounded-md bg-[#00CFAF] px-5 text-black hover:bg-[#00A289] uppercase tracking-wide"
+            className="rounded-md bg-[#00CFAF] px-5 text-black hover:bg-[#00A289] uppercase tracking-wide transition-all duration-200 hover:shadow-[0_0_20px_-4px] hover:shadow-[#00CFAF]/50"
           >
             Começar Projeto <ArrowRightIcon className="ml-2 h-4 w-4" />
           </Button>
@@ -316,273 +363,306 @@ export default function CleitonAviLanding() {
       </header>
 
       {/* HERO */}
-      <section className="px-6 pt-40 pb-24 md:pb-36 text-center">
+      <section className="relative px-6 pt-40 pb-28 md:pb-40 text-center overflow-hidden">
+        {/* Glow radial de fundo */}
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] rounded-full bg-[#00CFAF]/8 blur-[120px]" />
+          <div className="absolute left-1/2 top-[40%] -translate-x-1/2 -translate-y-1/2 h-[300px] w-[500px] rounded-full bg-[#00CFAF]/5 blur-[80px]" />
+        </div>
+
         <div className="mx-auto max-w-4xl">
-          <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-wide text-white/70">
-            <span>Desde 2012 Criando Marcas Que Performam</span>
-          </div>
-          <h1 className="text-balance text-5xl leading-none tracking-tight text-white sm:text-7xl md:text-8xl capitalize">
-            Design de marca
-            <span className="block">Sem surpresas</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-pretty text-base text-white/70 capitalize">
-            Pacotes claros, processo transparente e entrega garantida. Sua identidade profissional pronta
-            para elevar percepção, diferenciação e confiança.
-          </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button
-              size="lg"
-              className="rounded-md bg-[#00CFAF] px-6 text-black hover:bg-[#00A289] uppercase tracking-wide"
-              onClick={() => setOpen(true)}
-            >
-              Ver Pacotes & Iniciar <ArrowRightIcon className="ml-2 h-4 w-4" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white/20 bg-transparent text-white hover:border-[#00CFAF] hover:text-[#00CFAF] hover:bg-white/5 uppercase tracking-wide"
-              onClick={() => document.getElementById('processo')?.scrollIntoView({ behavior: 'smooth' })}
-            >
-              Como Funciona
-            </Button>
-          </div>
+          <Reveal>
+            <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-widest text-white/60">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#00CFAF]" />
+              Desde 2012 criando marcas que performam
+            </div>
+          </Reveal>
+          <Reveal delay={80}>
+            <h1 className="text-balance text-5xl leading-none tracking-tight text-white sm:text-7xl md:text-8xl">
+              Design de marca
+              <span className="block">Sem surpresas</span>
+            </h1>
+          </Reveal>
+          <Reveal delay={160}>
+            <p className="mx-auto mt-6 max-w-2xl text-pretty text-base text-white/60 leading-relaxed">
+              Pacotes claros, processo transparente e entrega garantida. Sua identidade profissional
+              pronta para elevar percepção, diferenciação e confiança.
+            </p>
+          </Reveal>
+          <Reveal delay={240}>
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Button
+                size="lg"
+                className="rounded-md bg-[#00CFAF] px-6 text-black hover:bg-[#00A289] uppercase tracking-wide transition-all duration-200 hover:shadow-[0_0_24px_-4px] hover:shadow-[#00CFAF]/50"
+                onClick={() => setOpen(true)}
+              >
+                Ver Pacotes & Iniciar <ArrowRightIcon className="ml-2 h-4 w-4" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white/20 bg-transparent text-white hover:border-[#00CFAF]/60 hover:text-[#00CFAF] hover:bg-white/5 uppercase tracking-wide transition-all duration-200"
+                onClick={() => document.getElementById('processo')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                Como funciona
+              </Button>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* BENEFÍCIOS */}
-      <section className="border-y border-white/5 bg-[#111111] px-6 py-24">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-3 text-center">
+      <section className="border-y border-white/5 bg-[#0D0D0D] px-6 py-24">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-5 md:grid-cols-3 text-center">
           {[
-            { icon: <ZapIcon className="mx-auto h-8 w-8 text-[#00CFAF]" />, title: 'Velocidade Real', desc: 'De 2 a 8 semanas conforme o pacote. Sem novela, sem atrasos.' },
-            { icon: <TargetIcon className="mx-auto h-8 w-8 text-[#00CFAF]" />, title: '100% Estratégico', desc: 'Cada decisão visual conecta com objetivo de negócio.' },
-            { icon: <AwardIcon className="mx-auto h-8 w-8 text-[#00CFAF]" />, title: 'Qualidade Sênior', desc: 'Desde 2012 em design. Zero projetos reprovados.' },
+            { icon: <ZapIcon className="mx-auto h-7 w-7 text-[#00CFAF]" />, title: 'Velocidade real', desc: 'De 2 a 8 semanas conforme o pacote. Sem novela, sem atrasos.' },
+            { icon: <TargetIcon className="mx-auto h-7 w-7 text-[#00CFAF]" />, title: '100% estratégico', desc: 'Cada decisão visual conecta com objetivo de negócio.' },
+            { icon: <AwardIcon className="mx-auto h-7 w-7 text-[#00CFAF]" />, title: 'Qualidade sênior', desc: 'Desde 2012 em design. Zero projetos reprovados.' },
           ].map((b, i) => (
-            <Card key={i} className="border-white/10 bg-[#0A0A0A]">
-              <CardContent className="space-y-3 p-6">
-                {b.icon}
-                <h3 className="text-xl text-white capitalize">{b.title}</h3>
-                <p className="text-sm text-white/70 capitalize">{b.desc}</p>
-              </CardContent>
-            </Card>
+            <Reveal key={i} delay={i * 100}>
+              <Card className="border-white/8 bg-[#0A0A0A] hover:border-[#00CFAF]/25 transition-all duration-300 hover:shadow-[0_0_40px_-12px] hover:shadow-[#00CFAF]/20 h-full">
+                <CardContent className="space-y-3 p-8">
+                  <div className="mb-1">{b.icon}</div>
+                  <h3 className="text-lg font-medium text-white">{b.title}</h3>
+                  <p className="text-sm text-white/55 leading-relaxed">{b.desc}</p>
+                </CardContent>
+              </Card>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* PROJETOS */}
-      <section id="projetos" className="px-6 py-24 text-center">
+      <section id="projetos" className="px-6 py-28 text-center">
         <div className="mx-auto max-w-7xl">
-          <h2 className="mb-10 text-4xl tracking-tight text-white sm:text-5xl capitalize">Trabalhos Selecionados</h2>
+          <Reveal>
+            <h2 className="mb-3 text-4xl tracking-tight text-white sm:text-5xl">Trabalhos selecionados</h2>
+            <p className="mb-12 text-sm text-white/50">Arraste para explorar</p>
+          </Reveal>
           <CarouselProjetos />
         </div>
       </section>
 
       {/* PACOTES */}
-      <section id="pacotes" className="px-6 py-24 text-center">
+      <section id="pacotes" className="px-6 py-28 text-center bg-[#0D0D0D]">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-14">
-            <h2 className="text-4xl tracking-tight text-white sm:text-5xl capitalize">Escolha O Formato Ideal</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm text-white/70 capitalize">
-              Todos os pacotes seguem meu processo sênior, com alinhamento claro e garantia de satisfação.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 text-left">
-            {packages.map((pkg) => (
-              <Card key={pkg.name} className={`relative border ${pkg.highlight ? 'border-[#00CFAF]/60' : 'border-white/10'} bg-[#111111]`}>
-                {pkg.highlight && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#00CFAF] px-3 py-1 text-[11px] font-medium text-black shadow-lg">
-                    Mais escolhido
-                  </div>
-                )}
-                <CardHeader>
-                  <CardTitle className="text-2xl text-white capitalize">{pkg.name}</CardTitle>
-                  <div className="mt-1 text-3xl text-white capitalize">{pkg.price}</div>
-                  <div className="mt-2 flex items-center gap-2 text-xs text-white/70">
-                    <ClockIcon className="h-3.5 w-3.5" /> {pkg.duration}
-                  </div>
-                  <p className="mt-3 text-sm text-white/70">{pkg.desc}</p>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <ul className="space-y-2">
-                    {pkg.features.map((f) => (
-                      <li key={f} className="flex gap-2 text-sm text-white/80"><CheckIcon className="mt-0.5 h-4 w-4 text-[#00CFAF]" />{f}</li>
-                    ))}
-                  </ul>
-                  {pkg.notIncluded.length > 0 && (
-                    <div className="mt-4 border-t border-white/10 pt-4">
-                      {pkg.notIncluded.map((n) => (
-                        <div key={n} className="flex gap-2 text-sm text-white/50"><XIcon className="mt-0.5 h-4 w-4" />{n}</div>
-                      ))}
+          <Reveal>
+            <div className="mb-16">
+              <h2 className="text-4xl tracking-tight text-white sm:text-5xl">Escolha o formato ideal</h2>
+              <p className="mx-auto mt-3 max-w-2xl text-sm text-white/55 leading-relaxed">
+                Todos os pacotes seguem meu processo sênior, com alinhamento claro e garantia de satisfação.
+              </p>
+            </div>
+          </Reveal>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3 text-left">
+            {packages.map((pkg, i) => (
+              <Reveal key={pkg.name} delay={i * 100}>
+                <Card className={`relative border h-full flex flex-col transition-all duration-300 ${pkg.highlight ? 'border-[#00CFAF]/50 hover:border-[#00CFAF]/80 hover:shadow-[0_0_50px_-12px] hover:shadow-[#00CFAF]/25' : 'border-white/8 hover:border-white/20 hover:shadow-[0_8px_40px_-12px] hover:shadow-black/60'} bg-[#0A0A0A]`}>
+                  {pkg.highlight && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#00CFAF] px-3 py-1 text-[11px] font-medium text-black shadow-lg">
+                      Mais escolhido
                     </div>
                   )}
-                  <Button
-                    onClick={() => { setOpen(true); setForm((prev) => ({ ...prev, pack: pkg.name })); }}
-                    className={`mt-4 w-full uppercase tracking-wide ${pkg.highlight ? 'bg-[#00CFAF] text-black hover:bg-[#00A289]' : 'bg-transparent text-white hover:bg-white/5 border border-white/30'}`}
-                  >
-                    Escolher {pkg.name}
-                  </Button>
-                </CardContent>
-              </Card>
+                  <CardHeader>
+                    <CardTitle className="text-2xl text-white">{pkg.name}</CardTitle>
+                    <div className="mt-1 text-3xl font-light text-white">{pkg.price}</div>
+                    <div className="mt-2 flex items-center gap-2 text-xs text-white/50">
+                      <ClockIcon className="h-3.5 w-3.5" /> {pkg.duration}
+                    </div>
+                    <p className="mt-3 text-sm text-white/60 leading-relaxed">{pkg.desc}</p>
+                  </CardHeader>
+                  <CardContent className="space-y-3 flex-1 flex flex-col">
+                    <ul className="space-y-2.5 flex-1">
+                      {pkg.features.map((f) => (
+                        <li key={f} className="flex gap-2.5 text-sm text-white/75">
+                          <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-[#00CFAF]" />{f}
+                        </li>
+                      ))}
+                    </ul>
+                    {pkg.notIncluded.length > 0 && (
+                      <div className="mt-4 border-t border-white/8 pt-4">
+                        {pkg.notIncluded.map((n) => (
+                          <div key={n} className="flex gap-2 text-sm text-white/35">
+                            <XIcon className="mt-0.5 h-4 w-4 shrink-0" />{n}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <Button
+                      onClick={() => { setOpen(true); setForm((prev) => ({ ...prev, pack: pkg.name })); }}
+                      className={`mt-4 w-full uppercase tracking-wide transition-all duration-200 ${pkg.highlight ? 'bg-[#00CFAF] text-black hover:bg-[#00A289] hover:shadow-[0_0_20px_-4px] hover:shadow-[#00CFAF]/50' : 'bg-transparent text-white hover:bg-white/8 border border-white/20 hover:border-white/40'}`}
+                    >
+                      Escolher {pkg.name}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* COMPARATIVO */}
-<section id="comparativo" className="px-6 py-24">
-  <div className="mx-auto max-w-7xl">
-    {/* títulos centralizados + sentence case apenas no primeiro caractere */}
-    <h2 className="mb-2 text-center text-4xl sm:text-5xl tracking-tight text-white">
-      Por que escolher pacotes fixos?
-    </h2>
-    <p className="mb-10 text-center text-sm text-white/70">
-      Compare e veja a diferença
-    </p>
+      <section id="comparativo" className="px-6 py-28">
+        <div className="mx-auto max-w-7xl">
+          <Reveal>
+            <h2 className="mb-2 text-center text-4xl sm:text-5xl tracking-tight text-white">
+              Por que escolher pacotes fixos?
+            </h2>
+            <p className="mb-12 text-center text-sm text-white/50">
+              Compare e veja a diferença
+            </p>
+          </Reveal>
 
-    {/* helper sentence-case: só a primeira letra vira maiúscula; se começar com número, mantém */}
-    {/*
-      Coloquei dentro do JSX para ficar 100% colável. Se preferir,
-      extraia para o topo do arquivo.
-    */}
-    {(() => {
-      function sentenceCase(input: string) {
-        if (!input) return "";
-        const s = input.trim();
-        // se começa com letra, sobe só a primeira e baixa o resto
-        if (/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(s)) {
-          return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-        }
-        // se começa com número/símbolo, retorna do jeito que está
-        return s;
-      }
-
-      return (
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0A1116]">
-          <table className="w-full border-collapse text-[15px]">
-            <thead>
-              <tr className="text-white/80">
-                <th className="w-[22%] px-5 py-4 text-left font-medium bg-[#0D1419]">
-                  &nbsp;
-                </th>
-                <th className="w-[26%] px-5 py-4 text-left font-medium bg-[#0D1419]">
-                  {sentenceCase("agências tradicionais")}
-                </th>
-                <th className="w-[26%] px-5 py-4 text-left font-medium bg-[#0D1419]">
-                  {sentenceCase("freelancers")}
-                </th>
-                <th className="w-[26%] px-5 py-4 text-left font-semibold bg-[#14B8A6] text-black">
-                  {sentenceCase("cleiton avi")}
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {compareRows.map((r, idx) => {
-                const rowBg = idx % 2 === 0 ? "bg-[#0A1318]" : "bg-[#0C151B]";
-                return (
-                  <tr key={r.label} className={rowBg}>
-                    {/* 1ª coluna — destaque extra */}
-                    <td className="px-5 py-4 font-semibold text-white/90 bg-[#0D1419] border-l-4 border-[#14B8A6]">
-                      {sentenceCase(r.label)}
-                    </td>
-
-                    {/* Demais colunas */}
-                    <td className="px-5 py-4 text-white/75">
-                      {sentenceCase(String(r.agencies))}
-                    </td>
-                    <td className="px-5 py-4 text-white/75">
-                      {sentenceCase(String(r.freelancers))}
-                    </td>
-                    <td className="px-5 py-4 font-medium text-[#2DD4BF]">
-                      {/* mantém “2–6 semanas”, “R$” etc se começarem com número/símbolo */}
-                      {sentenceCase(String(r.cleiton))}
-                    </td>
+          <Reveal delay={100}>
+            <div className="overflow-hidden rounded-2xl border border-white/8 bg-[#0A0A0A]">
+              <table className="w-full border-collapse text-[15px]">
+                <thead>
+                  <tr className="text-white/50 text-xs uppercase tracking-wider">
+                    <th className="w-[22%] px-5 py-4 text-left font-medium bg-[#111111]">&nbsp;</th>
+                    <th className="w-[26%] px-5 py-4 text-left font-medium bg-[#111111]">{sentenceCase('agências tradicionais')}</th>
+                    <th className="w-[26%] px-5 py-4 text-left font-medium bg-[#111111]">{sentenceCase('freelancers')}</th>
+                    <th className="w-[26%] px-5 py-4 text-left font-semibold bg-[#111111] text-[#00CFAF]">{sentenceCase('cleiton avi')}</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-
-          <div className="border-t border-white/10 px-5 py-3 text-center text-xs text-white/55">
-            *Revisões ilimitadas no conceito escolhido durante a fase de desenvolvimento.
-          </div>
+                </thead>
+                <tbody>
+                  {compareRows.map((r, idx) => {
+                    const rowBg = idx % 2 === 0 ? 'bg-[#0A0A0A]' : 'bg-[#0D0D0D]';
+                    return (
+                      <tr key={r.label} className={`${rowBg} transition-colors duration-150 hover:bg-[#141414]`}>
+                        <td className="px-5 py-4 font-semibold text-white/80 border-l-2 border-[#00CFAF]/40">
+                          {sentenceCase(r.label)}
+                        </td>
+                        <td className="px-5 py-4 text-white/40">{sentenceCase(String(r.agencies))}</td>
+                        <td className="px-5 py-4 text-white/40">{sentenceCase(String(r.freelancers))}</td>
+                        <td className="px-5 py-4 font-medium text-[#00CFAF]">{sentenceCase(String(r.cleiton))}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              <div className="border-t border-white/8 px-5 py-3 text-center text-xs text-white/30">
+                *Revisões ilimitadas no conceito escolhido durante a fase de desenvolvimento.
+              </div>
+            </div>
+          </Reveal>
         </div>
-      );
-    })()}
-  </div>
-</section>
-
+      </section>
 
       {/* PROCESSO */}
-      <section id="processo" className="border-y border-white/5 bg-[#111111] px-6 py-24 text-center">
+      <section id="processo" className="border-y border-white/5 bg-[#0D0D0D] px-6 py-28 text-center">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-14">
-            <h2 className="text-4xl tracking-tight text-white sm:text-5xl capitalize">Como funciona o processo</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm text-white/70 capitalize">Transparente, colaborativo e focado em resultado.</p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 text-left">
+          <Reveal>
+            <div className="mb-16">
+              <h2 className="text-4xl tracking-tight text-white sm:text-5xl">Como funciona o processo</h2>
+              <p className="mx-auto mt-3 max-w-2xl text-sm text-white/55 leading-relaxed">
+                Transparente, colaborativo e focado em resultado.
+              </p>
+            </div>
+          </Reveal>
+          <div className="grid grid-cols-1 gap-3 text-left max-w-3xl mx-auto">
             {[
-              { step: '01', title: 'Briefing Estratégico', dur: '1–2 dias', desc: 'Mergulho nos objetivos, público, contexto e restrições.' },
-              { step: '02', title: 'Pesquisa & Estratégia', dur: '3–5 dias', desc: 'Leitura de mercado e concorrência. Definição de posicionamento.' },
-              { step: '03', title: 'Rotas Iniciais', dur: '5–7 dias', desc: 'Apresento 2–3 rotas com narrativas visuais distintas.' },
+              { step: '01', title: 'Briefing estratégico', dur: '1–2 dias', desc: 'Mergulho nos objetivos, público, contexto e restrições.' },
+              { step: '02', title: 'Pesquisa & estratégia', dur: '3–5 dias', desc: 'Leitura de mercado e concorrência. Definição de posicionamento.' },
+              { step: '03', title: 'Rotas iniciais', dur: '5–7 dias', desc: 'Apresento 2–3 rotas com narrativas visuais distintas.' },
               { step: '04', title: 'Refino', dur: '5–10 dias', desc: 'Evoluímos juntos até a melhor versão.' },
-              { step: '05', title: 'Entrega & Onboard', dur: '2–3 dias', desc: 'Arquivos, diretrizes e materiais organizados.' },
-            ].map((s) => (
-              <div key={s.step} className="flex items-start gap-4 rounded-xl border border-white/10 bg-[#0A0A0A] p-6">
-                <div className="grid h-14 w-14 place-items-center rounded-full bg-[#00CFAF] text-black">{s.step}</div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between gap-4">
-                    <h3 className="text-xl text-white capitalize">{s.title}</h3>
-                    <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] text-white/70">{s.dur}</span>
+              { step: '05', title: 'Entrega & onboard', dur: '2–3 dias', desc: 'Arquivos, diretrizes e materiais organizados.' },
+            ].map((s, i) => (
+              <Reveal key={s.step} delay={i * 80}>
+                <div className="flex items-start gap-5 rounded-xl border border-white/8 bg-[#0A0A0A] p-6 hover:border-white/15 transition-all duration-300 group">
+                  <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#00CFAF]/10 border border-[#00CFAF]/30 text-[#00CFAF] text-sm font-medium group-hover:bg-[#00CFAF] group-hover:text-black transition-all duration-300">
+                    {s.step}
                   </div>
-                  <p className="mt-2 text-sm text-white/70">{s.desc}</p>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between gap-4">
+                      <h3 className="text-base font-medium text-white">{s.title}</h3>
+                      <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] text-white/50 shrink-0">{s.dur}</span>
+                    </div>
+                    <p className="mt-1.5 text-sm text-white/55 leading-relaxed">{s.desc}</p>
+                  </div>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA FINAL */}
-      <section className="relative px-6 py-24 text-center">
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,#0A1A1A_0%,#1A3A3A_100%)]" />
-        <div className="mx-auto max-w-4xl">
-          <h3 className="text-balance text-4xl tracking-tight text-white sm:text-5xl capitalize">Pronto Para Elevar Sua Marca?</h3>
-          <p className="mx-auto mt-3 max-w-2xl text-sm text-white/70 capitalize">
-            Envie suas informações e eu retorno em até 24h úteis com os próximos passos.
-          </p>
-          <Button
-            size="lg"
-            className="mt-6 rounded-md bg-[#00CFAF] px-6 text-black hover:bg-[#00A289] uppercase tracking-wide"
-            onClick={() => setOpen(true)}
-          >
-            Iniciar Conversa <ArrowRightIcon className="ml-2 h-4 w-4" />
-          </Button>
+      <section className="relative px-6 py-32 text-center overflow-hidden">
+        {/* Fundo com gradiente + glow */}
+        <div className="absolute inset-0 -z-10 bg-[#0A0A0A]" />
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] rounded-full bg-[#00CFAF]/6 blur-[100px]" />
         </div>
+        {/* Linha decorativa superior */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-64 bg-gradient-to-r from-transparent via-[#00CFAF]/40 to-transparent" />
+
+        <Reveal>
+          <div className="mx-auto max-w-2xl">
+            <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-[#00CFAF]/20 bg-[#00CFAF]/5 px-4 py-2 text-xs uppercase tracking-widest text-[#00CFAF]/80">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#00CFAF]" />
+              Vamos trabalhar juntos
+            </div>
+            <h3 className="text-balance text-4xl tracking-tight text-white sm:text-5xl">
+              Pronto para elevar sua marca?
+            </h3>
+            <p className="mx-auto mt-4 max-w-xl text-sm text-white/55 leading-relaxed">
+              Envie suas informações e eu retorno em até 24h úteis com os próximos passos.
+            </p>
+            <Button
+              size="lg"
+              className="mt-8 rounded-md bg-[#00CFAF] px-8 text-black hover:bg-[#00A289] uppercase tracking-wide transition-all duration-200 hover:shadow-[0_0_32px_-4px] hover:shadow-[#00CFAF]/50"
+              onClick={() => setOpen(true)}
+            >
+              Iniciar conversa <ArrowRightIcon className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </Reveal>
       </section>
 
       {/* RODAPÉ */}
-      <footer className="border-t-2 border-[#00CFAF] bg-[#0A0A0A] px-6 py-10 text-white text-center">
-        <div className="mx-auto max-w-7xl">
-          <div className="text-2xl">Cleiton Avi</div>
-          <p className="mt-1 text-sm/relaxed opacity-80">Designer de Marcas • Desde 2012</p>
-          <p className="mt-1 text-xs opacity-70">© {new Date().getFullYear()} Cleiton Avi. Todos os direitos reservados.</p>
+      <footer className="border-t border-white/8 bg-[#0A0A0A] px-6 py-12 text-white">
+        <div className="mx-auto max-w-7xl flex flex-col items-center gap-6 md:flex-row md:justify-between">
+          {/* Logo + tagline */}
+          <div className="flex items-center gap-3">
+            <div className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-[#00CFAF] to-[#00A289]">
+              <svg width="14" height="14" viewBox="0 0 40 40" fill="none" aria-hidden>
+                <path d="M20 8L32 20L20 32L8 20L20 8Z" fill="#fff" fillOpacity=".9" />
+              </svg>
+            </div>
+            <div>
+              <div className="text-sm font-medium">Cleiton Avi</div>
+              <div className="text-xs text-white/40">Designer de Marcas · Desde 2012</div>
+            </div>
+          </div>
+
+          {/* Nav links */}
+          <div className="flex items-center gap-6">
+            {['Processo', 'Projetos', 'Pacotes', 'Comparativo'].map((item) => (
+              <a key={item} href={`#${item.toLowerCase()}`} className="text-xs text-white/40 hover:text-white/80 transition-colors duration-200">
+                {item}
+              </a>
+            ))}
+          </div>
+
+          {/* Copy */}
+          <p className="text-xs text-white/30">
+            © {new Date().getFullYear()} Cleiton Avi. Todos os direitos reservados.
+          </p>
         </div>
       </footer>
 
-      {/* FORMULÁRIO + OVERLAY COM BLUR/DARK */}
+      {/* FORMULÁRIO */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild><span /></DialogTrigger>
-
-        {/* Overlay personalizado */}
         <DialogOverlay className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
-
         <DialogContent className="max-h-[90vh] overflow-y-auto border-white/10 bg-[#0A0A0A] text-white sm:max-w-lg">
           <DialogHeader>
-            <div className="mx-auto mb-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-wide text-white/70">
-              Desde 2012 Criando Marcas Que Performam
+            <div className="mx-auto mb-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-wide text-white/60">
+              Desde 2012 criando marcas que performam
             </div>
-            <DialogTitle className="text-2xl text-white text-center capitalize">Agendar Conversa Inicial</DialogTitle>
-            <p className="mt-1 text-sm text-white/70 text-center">
+            <DialogTitle className="text-2xl text-white text-center">Agendar conversa inicial</DialogTitle>
+            <p className="mt-1 text-sm text-white/55 text-center">
               Primeiro, me conte rapidamente sobre você e sua marca.
             </p>
           </DialogHeader>
@@ -611,7 +691,7 @@ export default function CleitonAviLanding() {
               <Label>Qual pacote te interessa?</Label>
               <RadioGroup value={form.pack} onValueChange={(v) => setForm({ ...form, pack: v })} className="mt-2 grid gap-2">
                 {['Essencial', 'Estratégico', 'Premium', 'Ainda não sei'].map((opt) => (
-                  <div key={opt} className="flex items-center gap-2 rounded-md border border-white/15 p-3">
+                  <div key={opt} className="flex items-center gap-2 rounded-md border border-white/15 p-3 hover:border-white/30 transition-colors duration-150">
                     <RadioGroupItem value={opt} id={`pack-${opt}`} className="text-[#00CFAF]" />
                     <Label htmlFor={`pack-${opt}`} className="cursor-pointer">{opt}</Label>
                   </div>
@@ -625,7 +705,7 @@ export default function CleitonAviLanding() {
                 id="timeline"
                 value={form.timeline}
                 onChange={(e) => setForm({ ...form, timeline: e.target.value })}
-                className="mt-2 w-full rounded-md border border-white/15 bg-[#111111] p-3 text-sm outline-none focus:border-[#00CFAF]"
+                className="mt-2 w-full rounded-md border border-white/15 bg-[#111111] p-3 text-sm outline-none focus:border-[#00CFAF] transition-colors duration-150"
               >
                 <option value="">Escolha…</option>
                 <option value="ASAP">Imediatamente (ASAP)</option>
@@ -644,7 +724,7 @@ export default function CleitonAviLanding() {
                     key={b}
                     onClick={() => setForm({ ...form, budget: b })}
                     type="button"
-                    className={`rounded-md border p-3 text-sm transition ${form.budget === b ? 'border-white bg-white text-black' : 'border-white/15 bg-transparent text-white hover:bg-white/5'}`}
+                    className={`rounded-md border p-3 text-sm transition-all duration-150 ${form.budget === b ? 'border-[#00CFAF] bg-[#00CFAF]/10 text-white' : 'border-white/15 bg-transparent text-white/70 hover:bg-white/5 hover:border-white/30'}`}
                   >
                     {b}
                   </button>
@@ -664,7 +744,7 @@ export default function CleitonAviLanding() {
             </div>
 
             <div>
-              <Label htmlFor="challenge">Maior desafio hoje <span className="text-white/50">(opcional)</span></Label>
+              <Label htmlFor="challenge">Maior desafio hoje <span className="text-white/40">(opcional)</span></Label>
               <Textarea
                 id="challenge"
                 value={form.challenge}
@@ -674,10 +754,10 @@ export default function CleitonAviLanding() {
               />
             </div>
 
-            <Button size="lg" className="w-full rounded-full bg-[#00CFAF] text-black hover:bg-[#00A289] uppercase tracking-wide" onClick={submit}>
-              Enviar E Agendar
+            <Button size="lg" className="w-full rounded-full bg-[#00CFAF] text-black hover:bg-[#00A289] uppercase tracking-wide transition-all duration-200 hover:shadow-[0_0_20px_-4px] hover:shadow-[#00CFAF]/40" onClick={submit}>
+              Enviar e agendar
             </Button>
-            <p className="-mt-2 text-center text-xs text-white/60">Retorno em até 24h úteis com os próximos passos.</p>
+            <p className="-mt-2 text-center text-xs text-white/40">Retorno em até 24h úteis com os próximos passos.</p>
           </div>
         </DialogContent>
       </Dialog>
