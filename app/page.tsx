@@ -313,7 +313,7 @@ export default function CleitonAviLanding() {
 
   const submit = () => {
     const required = ['name', 'email', 'phone', 'company', 'pack', 'timeline', 'budget', 'vision'] as const;
-    const missing = (required as Array<keyof FormState>).filter((k) => !form[k]);
+    const missing = Array.from(required).filter((k) => !form[k]);
     if (missing.length) { alert('Preencha os campos obrigatórios.'); return; }
     console.log('Form LP Cleiton Avi:', form);
     alert('Recebi suas infos. Vou responder em até 24h úteis com os próximos passos.');

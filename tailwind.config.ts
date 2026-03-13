@@ -35,16 +35,4 @@ export default {
       },
     },
   },
-  safelist: [
-    "bg-[#0A0A0A]",
-    "from-[#0A0A0A]",
-    "to-transparent",
-    "bg-[#111]",
-    "bg-[#0B0F14]",
-    "bg-[#0E1620]",
-    "bg-[#0A1118]",
-    "bg-[#0C121A]",
-    "w-[320px]",
-    "hover:scale-[1.03]",
-  ],
 } satisfies Config;
