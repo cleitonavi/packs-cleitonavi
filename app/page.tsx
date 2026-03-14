@@ -335,13 +335,9 @@ export default function CleitonAviLanding() {
     setSubmitted(true);
   };
 
-  const formatPhone = (value: string) => {
-    const d = value.replace(/\D/g, '').slice(0, 11);
-    if (d.length <= 2) return d;
-    if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
-    if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
-    return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
-  };
+  const formatPhone = (value: string) =>
+    // Permite dígitos, +, espaço, (, ), - para números internacionais
+    value.replace(/[^\d\s+\-()]/g, '').slice(0, 20);
 
   function sentenceCase(input: string) {
     if (!input) return '';
@@ -358,16 +354,8 @@ export default function CleitonAviLanding() {
       {/* NAV */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#0A0A0A]/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-[#00CFAF] to-[#00A289] shadow-[0_0_40px_-10px] shadow-[#00CFAF]/40">
-              <svg width="18" height="18" viewBox="0 0 40 40" fill="none" aria-hidden>
-                <circle cx="20" cy="20" r="18" stroke="#fff" strokeOpacity=".25" />
-                <path d="M20 8L32 20L20 32L8 20L20 8Z" fill="#fff" fillOpacity=".12" />
-                <path d="M20 8L32 20L20 32L8 20L20 8Z" stroke="#fff" strokeOpacity=".4" />
-              </svg>
-            </div>
-            <span className="text-lg font-medium tracking-tight">Cleiton Avi</span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-header.svg" alt="Cleiton Avi" className="h-6 w-auto sm:h-7" />
           <div className="hidden items-center gap-6 md:flex">
             <a href="#processo" className="text-sm text-white/60 transition-colors duration-200 hover:text-white">Processo</a>
             <a href="#projetos" className="text-sm text-white/60 transition-colors duration-200 hover:text-white">Projetos</a>
@@ -646,14 +634,10 @@ export default function CleitonAviLanding() {
       <footer className="border-t border-white/8 bg-[#0A0A0A] px-6 py-12 text-white">
         <div className="mx-auto max-w-7xl flex flex-col items-center gap-6 md:flex-row md:justify-between">
           {/* Logo + tagline */}
-          <div className="flex items-center gap-3">
-            <div className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-[#00CFAF] to-[#00A289]">
-              <svg width="14" height="14" viewBox="0 0 40 40" fill="none" aria-hidden>
-                <path d="M20 8L32 20L20 32L8 20L20 8Z" fill="#fff" fillOpacity=".9" />
-              </svg>
-            </div>
+          <div className="flex flex-col gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="Cleiton Avi" className="h-auto w-[220px]" />
             <div>
-              <div className="text-sm font-medium">Cleiton Avi</div>
               <div className="text-xs text-white/40">Build to last</div>
               <div className="text-xs text-white/30">Estratégia · Design · Legado</div>
             </div>
@@ -695,19 +679,23 @@ export default function CleitonAviLanding() {
                 </p>
               </div>
               <div className="w-full border-t border-white/8 pt-6 space-y-3">
-                <p className="text-xs text-white/35">Enquanto isso, conheça o processo de trabalho.</p>
-                <Button
-                  size="lg"
-                  className="w-full rounded-md border border-white/20 bg-transparent text-white hover:bg-white/5 uppercase tracking-wide"
-                  onClick={() => { setOpen(false); setSubmitted(false); setTimeout(() => document.getElementById('processo')?.scrollIntoView({ behavior: 'smooth' }), 150); }}
+                <p className="text-xs text-white/40 leading-relaxed">
+                  Enquanto isso, me acompanhe no Instagram e veja os bastidores dos projetos.
+                </p>
+                <a
+                  href="https://www.instagram.com/cleitonavi/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] px-6 py-3 text-sm font-medium uppercase tracking-wide text-white transition-opacity duration-200 hover:opacity-90"
                 >
-                  Ver processo
-                </Button>
+                  <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                  Seguir no Instagram
+                </a>
                 <button
                   className="w-full text-xs text-white/30 hover:text-white/60 transition-colors duration-150 py-1"
                   onClick={() => { setOpen(false); setSubmitted(false); }}
                 >
-                  Fechar
+                  Voltar para a página
                 </button>
               </div>
             </div>
@@ -746,10 +734,10 @@ export default function CleitonAviLanding() {
                     {errors.email && <p className="mt-1.5 flex items-center gap-1 text-xs text-red-400"><XIcon className="h-3 w-3 shrink-0" />{errors.email}</p>}
                   </div>
                   <div>
-                    <Label htmlFor="phone">WhatsApp*</Label>
+                    <Label htmlFor="phone">WhatsApp / Telefone*</Label>
                     <Input
-                      id="phone" type="tel" inputMode="numeric" value={form.phone}
-                      autoComplete="tel" placeholder="(47) 99999-9999"
+                      id="phone" type="tel" inputMode="tel" value={form.phone}
+                      autoComplete="tel" placeholder="+55 47 99999-0000"
                       onChange={(e) => { setForm({ ...form, phone: formatPhone(e.target.value) }); clearErr('phone'); }}
                       className={`mt-1 bg-transparent focus-visible:ring-[#00CFAF] ${errors.phone ? 'border-red-500/60 focus-visible:ring-red-500/40' : 'border-white/15'}`}
                     />
