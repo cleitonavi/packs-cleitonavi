@@ -104,14 +104,14 @@ const packages = [
     name: 'Essencial',
     price: 'A partir de R$ 5.000',
     duration: 'Até 3 semanas',
-    desc: 'O essencial bem feito: logo completo, paleta, tipografia e arquivos prontos para usar.',
+    desc: 'A maestria da síntese: identidade forte, paleta, tipografia e os fundamentos visuais para você dominar o seu mercado.',
     features: [
-      'Briefing guiado e direcionamento',
-      '2–3 rotas de logo com narrativa',
-      'Refinos até fechar a melhor versão',
-      'Paleta, tipografia e variações de uso',
-      'Arquivos finais (AI, SVG, PNG, PDF)',
-      'Kit social básico (perfis e covers)',
+      'Imersão e diagnóstico direto ao ponto',
+      '2–3 rotas visuais com argumento e alma',
+      'Lapidação até a versão definitiva',
+      'Sistema de cores, tipografia e grid de uso',
+      'Arquivos abertos e finais (AI, SVG, PNG, PDF)',
+      'Kit essencial para redes sociais',
     ],
     notIncluded: ['Manual completo', 'Pesquisa aprofundada'],
     highlight: false,
@@ -120,15 +120,15 @@ const packages = [
     name: 'Estratégico',
     price: 'A partir de R$ 12.000',
     duration: '3–5 semanas',
-    desc: 'Para quem quer posicionamento claro e um sistema visual consistente.',
+    desc: 'Para líderes que buscam um posicionamento inabalável e um sistema visual à prova do tempo.',
     features: [
-      'Tudo do Essencial',
-      'Pesquisa de mercado & concorrência',
-      'Posicionamento e pilares de marca',
-      'Sistema visual completo (cores, grids, patterns)',
-      'Apresentação da marca (deck)',
+      'Todo o escopo do pacote Essencial',
+      'Mapeamento estratégico de mercado',
+      'Definição de posicionamento e DNA da marca',
+      'Ecossistema visual profundo (patterns, apoio)',
+      'Deck de defesa da estratégia da marca',
       'Templates editáveis (Figma/Canva)',
-      'Manual de uso (guia resumido)',
+      'Brandbook enxuto e prático',
     ],
     notIncluded: [],
     highlight: true,
@@ -137,15 +137,15 @@ const packages = [
     name: 'Premium',
     price: 'Sob consulta',
     duration: '5–8 semanas',
-    desc: 'Branding de ponta a ponta: pesquisa profunda, arquitetura de marca e assets especiais.',
+    desc: 'A construção de um império: estratégia de ponta a ponta, pesquisa profunda e entregáveis de alto calibre.',
     features: [
-      'Tudo do Estratégico',
-      'Workshop de descoberta',
-      'Pesquisa com audiência',
-      'Arquitetura de marca e sub-marcas',
-      'Motion (logo animado) e mockups premium',
-      'Brand book completo',
-      'Acompanhamento na implementação',
+      'Todo o arsenal do pacote Estratégico',
+      'Workshop imersivo de descoberta',
+      'Leitura de campo com sua audiência',
+      'Arquitetura de marca e submarcas',
+      'Motion design (logo animado) e mockups premium',
+      'Brandbook completo',
+      'Consultoria sênior na fase de implementação',
     ],
     notIncluded: [],
     highlight: false,
@@ -153,12 +153,12 @@ const packages = [
 ];
 
 const compareRows = [
-  { label: 'Preço', agencies: '$5k - 30k+', freelancers: 'Variável', cleiton: 'Fixo & transparente' },
-  { label: 'Prazo', agencies: '3–9 meses', freelancers: 'Incertos', cleiton: '2–6 semanas' },
-  { label: 'Revisões', agencies: 'Limitadas', freelancers: 'Cobradas à parte', cleiton: 'Ilimitadas*' },
-  { label: 'Designer', agencies: 'Júnior/Mid', freelancers: 'Variável', cleiton: 'Sênior dedicado' },
-  { label: 'Processo', agencies: 'Complexo', freelancers: 'Informal', cleiton: 'Estruturado & colaborativo' },
-  { label: 'Comunicação', agencies: 'Reuniões intermináveis', freelancers: 'Irregular', cleiton: 'Direta & consultiva' },
+  { label: 'Preço', agencies: '$5k - 30k+', freelancers: 'Variável', cleiton: 'Fixo e transparente' },
+  { label: 'Prazo', agencies: '3–9 meses', freelancers: 'Variável', cleiton: '2–6 semanas' },
+  { label: 'Revisões', agencies: 'Limitadas', freelancers: 'Variáveis', cleiton: 'Ilimitadas na fase de desenvolvimento' },
+  { label: 'Quem executa', agencies: 'Equipe mista', freelancers: 'Profissional único', cleiton: 'Sênior dedicado' },
+  { label: 'Processo', agencies: 'Múltiplas etapas', freelancers: 'Adaptável', cleiton: 'Estruturado e colaborativo' },
+  { label: 'Comunicação', agencies: 'Via atendimento', freelancers: 'Direta', cleiton: 'Direta e consultiva' },
 ];
 
 /* ================================
@@ -374,19 +374,19 @@ export default function CleitonAviLanding() {
           <Reveal>
             <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-widest text-white/60">
               <span className="h-1.5 w-1.5 rounded-full bg-[#00CFAF]" />
-              Desde 2012 criando marcas que performam
+              Desde 2012 construindo legado
             </div>
           </Reveal>
           <Reveal delay={80}>
             <h1 className="text-balance text-5xl leading-none tracking-tight text-white sm:text-7xl md:text-8xl">
               Design de marca
-              <span className="block">Sem surpresas</span>
+              <span className="block">com lastro</span>
             </h1>
           </Reveal>
           <Reveal delay={160}>
             <p className="mx-auto mt-6 max-w-2xl text-pretty text-base text-white/60 leading-relaxed">
-              Pacotes claros, processo transparente e entrega garantida. Sua identidade profissional
-              pronta para elevar percepção, diferenciação e confiança.
+              Desde 2012 construindo legado. Um processo direto e transparente para líderes que exigem
+              uma marca à altura da sua entrega. Criada com intenção, feita para durar.
             </p>
           </Reveal>
           <Reveal delay={240}>
@@ -415,9 +415,9 @@ export default function CleitonAviLanding() {
       <section className="border-y border-white/5 bg-[#0D0D0D] px-6 py-24">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-5 md:grid-cols-3 text-center">
           {[
-            { icon: <ZapIcon className="mx-auto h-7 w-7 text-[#00CFAF]" />, title: 'Velocidade real', desc: 'De 2 a 8 semanas conforme o pacote. Sem novela, sem atrasos.' },
-            { icon: <TargetIcon className="mx-auto h-7 w-7 text-[#00CFAF]" />, title: '100% estratégico', desc: 'Cada decisão visual conecta com objetivo de negócio.' },
-            { icon: <AwardIcon className="mx-auto h-7 w-7 text-[#00CFAF]" />, title: 'Qualidade sênior', desc: 'Desde 2012 em design. Zero projetos reprovados.' },
+            { icon: <ZapIcon className="mx-auto h-7 w-7 text-[#00CFAF]" />, title: 'A soberania do tempo', desc: 'De 2 a 8 semanas, conforme o escopo. Entregamos clareza, previsibilidade e agilidade do início ao fim do projeto.' },
+            { icon: <TargetIcon className="mx-auto h-7 w-7 text-[#00CFAF]" />, title: 'A forma segue a alma', desc: 'Cada decisão visual nasce da sua essência e resolve um problema real do seu negócio. Traduzimos a sua verdade em uma marca inesquecível.' },
+            { icon: <AwardIcon className="mx-auto h-7 w-7 text-[#00CFAF]" />, title: 'Maestria e síntese', desc: 'Desde 2012 na trincheira. Você investe na precisão de um designer sênior dedicado integralmente ao sucesso do seu projeto.' },
           ].map((b, i) => (
             <Reveal key={i} delay={i * 100}>
               <Card className="border-white/8 bg-[#0A0A0A] hover:border-[#00CFAF]/25 transition-all duration-300 hover:shadow-[0_0_40px_-12px] hover:shadow-[#00CFAF]/20 h-full">
@@ -448,9 +448,9 @@ export default function CleitonAviLanding() {
         <div className="mx-auto max-w-7xl">
           <Reveal>
             <div className="mb-16">
-              <h2 className="text-4xl tracking-tight text-white sm:text-5xl">Escolha o formato ideal</h2>
+              <h2 className="text-4xl tracking-tight text-white sm:text-5xl">O ponto de partida do seu legado</h2>
               <p className="mx-auto mt-3 max-w-2xl text-sm text-white/55 leading-relaxed">
-                Todos os pacotes seguem meu processo sênior, com alinhamento claro e garantia de satisfação.
+                Todos os projetos têm a mesma profundidade estratégica. O que muda é o tamanho do ecossistema visual que vamos construir.
               </p>
             </div>
           </Reveal>
@@ -507,10 +507,10 @@ export default function CleitonAviLanding() {
         <div className="mx-auto max-w-7xl">
           <Reveal>
             <h2 className="mb-2 text-center text-4xl sm:text-5xl tracking-tight text-white">
-              Por que escolher pacotes fixos?
+              O jogo de longo prazo
             </h2>
             <p className="mb-12 text-center text-sm text-white/50">
-              Compare e veja a diferença
+              Entenda as diferenças estruturais do nosso modelo de trabalho.
             </p>
           </Reveal>
 
@@ -520,9 +520,9 @@ export default function CleitonAviLanding() {
                 <thead>
                   <tr className="text-white/50 text-xs uppercase tracking-wider">
                     <th className="w-[22%] px-5 py-4 text-left font-medium bg-[#111111]">&nbsp;</th>
-                    <th className="w-[26%] px-5 py-4 text-left font-medium bg-[#111111]">{sentenceCase('agências tradicionais')}</th>
-                    <th className="w-[26%] px-5 py-4 text-left font-medium bg-[#111111]">{sentenceCase('freelancers')}</th>
-                    <th className="w-[26%] px-5 py-4 text-left font-semibold bg-[#111111] text-[#00CFAF]">{sentenceCase('cleiton avi')}</th>
+                    <th className="w-[26%] px-5 py-4 text-left font-medium bg-[#111111]">Agências tradicionais</th>
+                    <th className="w-[26%] px-5 py-4 text-left font-medium bg-[#111111]">Freelancers independentes</th>
+                    <th className="w-[26%] px-5 py-4 text-left font-semibold bg-[#111111] text-[#00CFAF]">Cleiton Avi (Sênior)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -554,19 +554,19 @@ export default function CleitonAviLanding() {
         <div className="mx-auto max-w-7xl">
           <Reveal>
             <div className="mb-16">
-              <h2 className="text-4xl tracking-tight text-white sm:text-5xl">Como funciona o processo</h2>
+              <h2 className="text-4xl tracking-tight text-white sm:text-5xl">Um processo transparente</h2>
               <p className="mx-auto mt-3 max-w-2xl text-sm text-white/55 leading-relaxed">
-                Transparente, colaborativo e focado em resultado.
+                Um método visceral, focado em extrair a sua verdade e transformá-la em design com lastro.
               </p>
             </div>
           </Reveal>
           <div className="grid grid-cols-1 gap-3 text-left max-w-3xl mx-auto">
             {[
-              { step: '01', title: 'Briefing estratégico', dur: '1–2 dias', desc: 'Mergulho nos objetivos, público, contexto e restrições.' },
-              { step: '02', title: 'Pesquisa & estratégia', dur: '3–5 dias', desc: 'Leitura de mercado e concorrência. Definição de posicionamento.' },
-              { step: '03', title: 'Rotas iniciais', dur: '5–7 dias', desc: 'Apresento 2–3 rotas com narrativas visuais distintas.' },
-              { step: '04', title: 'Refino', dur: '5–10 dias', desc: 'Evoluímos juntos até a melhor versão.' },
-              { step: '05', title: 'Entrega & onboard', dur: '2–3 dias', desc: 'Arquivos, diretrizes e materiais organizados.' },
+              { step: '01', title: 'A escavação', dur: '1–2 dias', desc: 'Mergulho profundo nos objetivos, público, contexto e diferenciais do seu negócio.' },
+              { step: '02', title: 'O diagnóstico', dur: '3–5 dias', desc: 'Leitura de mercado e definição clara do seu posicionamento estratégico.' },
+              { step: '03', title: 'A forma ganha alma', dur: '5–7 dias', desc: 'Apresentação de 2 a 3 rotas visuais com argumentos e narrativas distintas.' },
+              { step: '04', title: 'A lapidação', dur: '5–10 dias', desc: 'Refinamento colaborativo e focado até alcançarmos a versão definitiva.' },
+              { step: '05', title: 'O legado em suas mãos', dur: '2–3 dias', desc: 'Entrega de arquivos organizados, diretrizes e materiais prontos para o mercado.' },
             ].map((s, i) => (
               <Reveal key={s.step} delay={i * 80}>
                 <div className="flex items-start gap-5 rounded-xl border border-white/8 bg-[#0A0A0A] p-6 hover:border-white/15 transition-all duration-300 group">
@@ -604,10 +604,10 @@ export default function CleitonAviLanding() {
               Vamos trabalhar juntos
             </div>
             <h3 className="text-balance text-4xl tracking-tight text-white sm:text-5xl">
-              Pronto para elevar sua marca?
+              Sua marca está pronta para durar?
             </h3>
             <p className="mx-auto mt-4 max-w-xl text-sm text-white/55 leading-relaxed">
-              Envie suas informações e eu retorno em até 24h úteis com os próximos passos.
+              Me envie as informações do seu negócio e eu retorno em até 24h úteis com o nosso plano de ação.
             </p>
             <Button
               size="lg"
@@ -632,7 +632,7 @@ export default function CleitonAviLanding() {
             </div>
             <div>
               <div className="text-sm font-medium">Cleiton Avi</div>
-              <div className="text-xs text-white/40">Designer de Marcas · Desde 2012</div>
+              <div className="text-xs text-white/40">Build to last · Estratégia · Design · Legado</div>
             </div>
           </div>
 
@@ -646,9 +646,10 @@ export default function CleitonAviLanding() {
           </div>
 
           {/* Copy */}
-          <p className="text-xs text-white/30">
-            © {new Date().getFullYear()} Cleiton Avi. Todos os direitos reservados.
-          </p>
+          <div className="text-right">
+            <p className="text-xs text-white/30">© 2026 Cleiton Avi | Brand designer</p>
+            <p className="text-xs text-white/20 mt-0.5">Rio do Sul, SC · Brazil</p>
+          </div>
         </div>
       </footer>
 
@@ -659,7 +660,7 @@ export default function CleitonAviLanding() {
         <DialogContent className="max-h-[90vh] overflow-y-auto border-white/10 bg-[#0A0A0A] text-white sm:max-w-lg">
           <DialogHeader>
             <div className="mx-auto mb-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-wide text-white/60">
-              Desde 2012 criando marcas que performam
+              Desde 2012 construindo legado
             </div>
             <DialogTitle className="text-2xl text-white text-center">Agendar conversa inicial</DialogTitle>
             <p className="mt-1 text-sm text-white/55 text-center">
