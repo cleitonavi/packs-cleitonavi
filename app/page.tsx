@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -85,18 +84,20 @@ function AwardIcon(p: IconProps) { return (<svg {...base(p)}><circle cx="12" cy=
    Dados
 ==================================*/
 const projectImagesTop = [
-  '/projetos/cima-1.jpg',
-  '/projetos/cima-2.jpg',
-  '/projetos/cima-3.jpg',
-  '/projetos/cima-4.jpg',
-  '/projetos/cima-5.jpg',
+  'https://cleitonavi.com/wp-content/uploads/2025/09/thumb_preto_no_branco.webp',
+  'https://cleitonavi.com/wp-content/uploads/2024/12/Thumbnail-Case-FTR.webp',
+  'https://cleitonavi.com/wp-content/uploads/2024/07/thumb_yoka_club-1.webp',
+  'https://cleitonavi.com/wp-content/uploads/2024/03/thumb_rocketseat.webp',
+  'https://cleitonavi.com/wp-content/uploads/2024/03/projeto_thumbnail.webp',
+  'https://cleitonavi.com/wp-content/uploads/2024/03/thumb_xtent_group.webp',
 ];
 const projectImagesBottom = [
-  '/projetos/baixo-1.jpg',
-  '/projetos/baixo-2.jpg',
-  '/projetos/baixo-3.jpg',
-  '/projetos/baixo-4.jpg',
-  '/projetos/baixo-5.jpg',
+  'https://cleitonavi.com/wp-content/uploads/2024/03/thumb-medsimple_1.webp',
+  'https://cleitonavi.com/wp-content/uploads/2024/03/thumb_capita_victor_g_lima.webp',
+  'https://cleitonavi.com/wp-content/uploads/2024/03/thumb_ia_para_devs.webp',
+  'https://cleitonavi.com/wp-content/uploads/2024/03/thumb_nlw_esports.webp',
+  'https://cleitonavi.com/wp-content/uploads/2024/03/thumb_csv-2.webp',
+  'https://cleitonavi.com/wp-content/uploads/2024/03/thumb_smtc.webp',
 ];
 
 const packages = [
@@ -113,7 +114,7 @@ const packages = [
       'Arquivos abertos e finais (AI, SVG, PNG, PDF)',
       'Kit essencial para redes sociais',
     ],
-    notIncluded: ['Manual completo', 'Pesquisa aprofundada'],
+    notIncluded: [],
     highlight: false,
   },
   {
@@ -171,8 +172,8 @@ function CarouselProjetos() {
 
   const posTop = React.useRef(0);
   const posBottom = React.useRef(0);
-  const baseTop = React.useRef(-60);
-  const baseBottom = React.useRef(-60);
+  const baseTop = React.useRef(-38);
+  const baseBottom = React.useRef(38);
   const dragVel = React.useRef(0);
   const lastTime = React.useRef<number | null>(null);
 
@@ -184,6 +185,7 @@ function CarouselProjetos() {
   const loopWBot = BOT_COUNT * ITEM_W + (BOT_COUNT - 1) * GAP;
 
   React.useEffect(() => {
+    posBottom.current = -loopWBot;
     let raf = 0;
     const step = (t: number) => {
       if (lastTime.current == null) lastTime.current = t;
@@ -246,14 +248,13 @@ function CarouselProjetos() {
       <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A]">
         <div ref={topRef} className="flex gap-6 will-change-transform py-4 px-2" style={{ transform: 'translateX(0)' }}>
           {[...projectImagesTop, ...projectImagesTop].map((src, i) => (
-            <div key={`t-${i}`} className="relative h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-[#111]">
-              <Image
+            <div key={`t-${i}`} className="h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-[#111]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={src}
                 alt={`Projeto ${i + 1}`}
-                fill
-                className="object-cover transition-transform duration-500 hover:scale-[1.05]"
-                sizes="(max-width: 768px) 75vw, 320px"
-                priority={i < 2}
+                className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.05]"
+                loading={i < 2 ? 'eager' : 'lazy'}
               />
             </div>
           ))}
@@ -266,18 +267,17 @@ function CarouselProjetos() {
       <div className="relative overflow-hidden rounded-2xl bg-[#0A0A0A]">
         <div
           ref={bottomRef}
-          className="flex flex-row-reverse gap-6 will-change-transform py-4 px-2"
+          className="flex gap-6 will-change-transform py-4 px-2"
           style={{ transform: 'translateX(0)' }}
         >
           {[...projectImagesBottom, ...projectImagesBottom].map((src, i) => (
-            <div key={`b-${i}`} className="relative h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-[#111]">
-              <Image
+            <div key={`b-${i}`} className="h-56 w-[320px] shrink-0 overflow-hidden rounded-xl bg-[#111]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={src}
                 alt={`Projeto ${i + 1}`}
-                fill
-                className="object-cover transition-transform duration-500 hover:scale-[1.05]"
-                sizes="(max-width: 768px) 75vw, 320px"
-                priority={i < 2}
+                className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.05]"
+                loading="lazy"
               />
             </div>
           ))}
@@ -492,7 +492,7 @@ export default function CleitonAviLanding() {
                       onClick={() => { setOpen(true); setForm((prev) => ({ ...prev, pack: pkg.name })); }}
                       className={`mt-4 w-full uppercase tracking-wide transition-all duration-200 ${pkg.highlight ? 'bg-[#00CFAF] text-black hover:bg-[#00A289] hover:shadow-[0_0_20px_-4px] hover:shadow-[#00CFAF]/50' : 'bg-transparent text-white hover:bg-white/8 border border-white/20 hover:border-white/40'}`}
                     >
-                      Escolher {pkg.name}
+                      Escolher pacote {pkg.name}
                     </Button>
                   </CardContent>
                 </Card>
@@ -632,7 +632,8 @@ export default function CleitonAviLanding() {
             </div>
             <div>
               <div className="text-sm font-medium">Cleiton Avi</div>
-              <div className="text-xs text-white/40">Build to last · Estratégia · Design · Legado</div>
+              <div className="text-xs text-white/40">Build to last</div>
+              <div className="text-xs text-white/30">Estratégia · Design · Legado</div>
             </div>
           </div>
 
@@ -648,7 +649,7 @@ export default function CleitonAviLanding() {
           {/* Copy */}
           <div className="text-right">
             <p className="text-xs text-white/30">© 2026 Cleiton Avi | Brand designer</p>
-            <p className="text-xs text-white/20 mt-0.5">Rio do Sul, SC · Brazil</p>
+            <p className="text-xs text-white/20 mt-0.5">Rio do Sul, SC Brazil</p>
           </div>
         </div>
       </footer>
