@@ -300,25 +300,39 @@ type FormState = {
   pack: string;
   timeline: string;
   budget: string;
-  vision: string;
-  challenge: string;
+  description: string;
 };
+type FormErrors = Partial<Record<keyof FormState, string>>;
+const EMPTY_FORM: FormState = { name: '', email: '', phone: '', company: '', pack: '', timeline: '', budget: '', description: '' };
 
 export default function CleitonAviLanding() {
   const [open, setOpen] = React.useState(false);
-  const [form, setForm] = React.useState<FormState>({
-    name: '', email: '', phone: '', company: '',
-    pack: '', timeline: '', budget: '', vision: '', challenge: '',
-  });
+  const [form, setForm] = React.useState<FormState>(EMPTY_FORM);
+  const [errors, setErrors] = React.useState<FormErrors>({});
+  const [submitted, setSubmitted] = React.useState(false);
+
+  const clearErr = (f: keyof FormState) => setErrors(prev => { const n = { ...prev }; delete n[f]; return n; });
+
+  const validate = (): FormErrors => {
+    const e: FormErrors = {};
+    if (!form.name.trim()) e.name = 'Informe seu nome.';
+    if (!form.email.trim()) e.email = 'Informe seu e-mail.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'E-mail inválido.';
+    if (!form.phone.trim()) e.phone = 'Informe seu telefone ou WhatsApp.';
+    if (!form.company.trim()) e.company = 'Informe a empresa ou projeto.';
+    if (!form.pack) e.pack = 'Escolha um pacote para continuar.';
+    if (!form.timeline) e.timeline = 'Selecione um prazo.';
+    if (!form.budget) e.budget = 'Selecione uma faixa de investimento.';
+    if (!form.description.trim()) e.description = 'Descreva seu projeto e objetivos.';
+    return e;
+  };
 
   const submit = () => {
-    const required = ['name', 'email', 'phone', 'company', 'pack', 'timeline', 'budget', 'vision'] as const;
-    const missing = Array.from(required).filter((k) => !form[k]);
-    if (missing.length) { alert('Preencha os campos obrigatórios.'); return; }
+    const e = validate();
+    if (Object.keys(e).length) { setErrors(e); return; }
+    setErrors({});
     console.log('Form LP Cleiton Avi:', form);
-    alert('Recebi suas infos. Vou responder em até 24h úteis com os próximos passos.');
-    setOpen(false);
-    setForm({ name: '', email: '', phone: '', company: '', pack: '', timeline: '', budget: '', vision: '', challenge: '' });
+    setSubmitted(true);
   };
 
   function sentenceCase(input: string) {
@@ -393,7 +407,7 @@ export default function CleitonAviLanding() {
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button
                 size="lg"
-                className="rounded-md bg-[#00CFAF] px-6 text-black hover:bg-[#00A289] uppercase tracking-wide transition-all duration-200 hover:shadow-[0_0_24px_-4px] hover:shadow-[#00CFAF]/50"
+                className="rounded-md bg-[#00CFAF] px-6 text-black hover:bg-[#00A289] uppercase tracking-wide transition-all duration-200 hover:shadow-[0_0_24px_-4px] hover:shadow-[#00CFAF]/50 w-full sm:w-auto"
                 onClick={() => setOpen(true)}
               >
                 Ver Pacotes & Iniciar <ArrowRightIcon className="ml-2 h-4 w-4" />
@@ -401,7 +415,7 @@ export default function CleitonAviLanding() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white/20 bg-transparent text-white hover:border-[#00CFAF]/60 hover:text-[#00CFAF] hover:bg-white/5 uppercase tracking-wide transition-all duration-200"
+                className="rounded-md border-white/20 bg-transparent px-6 text-white hover:border-[#00CFAF]/60 hover:text-[#00CFAF] hover:bg-white/5 uppercase tracking-wide transition-all duration-200 w-full sm:w-auto"
                 onClick={() => document.getElementById('processo')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Como funciona
@@ -515,8 +529,8 @@ export default function CleitonAviLanding() {
           </Reveal>
 
           <Reveal delay={100}>
-            <div className="overflow-hidden rounded-2xl border border-white/8 bg-[#0A0A0A]">
-              <table className="w-full border-collapse text-[15px]">
+            <div className="overflow-x-auto rounded-2xl border border-white/8 bg-[#0A0A0A]">
+              <table className="w-full min-w-[580px] border-collapse text-[15px]">
                 <thead>
                   <tr className="text-white/50 text-xs uppercase tracking-wider">
                     <th className="w-[22%] px-5 py-4 text-left font-medium bg-[#111111]">&nbsp;</th>
@@ -655,112 +669,193 @@ export default function CleitonAviLanding() {
       </footer>
 
       {/* FORMULÁRIO */}
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setSubmitted(false); setErrors({}); } }}>
         <DialogTrigger asChild><span /></DialogTrigger>
         <DialogOverlay className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
         <DialogContent className="max-h-[90vh] overflow-y-auto border-white/10 bg-[#0A0A0A] text-white sm:max-w-lg">
-          <DialogHeader>
-            <div className="mx-auto mb-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-wide text-white/60">
-              Desde 2012 construindo legado
-            </div>
-            <DialogTitle className="text-2xl text-white text-center">Agendar conversa inicial</DialogTitle>
-            <p className="mt-1 text-sm text-white/55 text-center">
-              Primeiro, me conte rapidamente sobre você e sua marca.
-            </p>
-          </DialogHeader>
 
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <Label htmlFor="name">Nome*</Label>
-                <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="border-white/15 bg-transparent focus-visible:ring-[#00CFAF]" />
+          {submitted ? (
+            /* ── SUCESSO ── */
+            <div className="flex flex-col items-center gap-6 py-10 text-center">
+              <div className="grid h-16 w-16 place-items-center rounded-full bg-[#00CFAF]/10 border border-[#00CFAF]/30">
+                <CheckIcon className="h-8 w-8 text-[#00CFAF]" />
               </div>
-              <div>
-                <Label htmlFor="email">E-mail*</Label>
-                <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="border-white/15 bg-transparent focus-visible:ring-[#00CFAF]" />
+              <div className="space-y-2">
+                <DialogTitle className="text-2xl font-medium text-white">Mensagem recebida.</DialogTitle>
+                <p className="text-sm text-white/55 mx-auto max-w-[280px] leading-relaxed">
+                  Vou analisar as informações do seu projeto e retorno em até 24h úteis com o plano de ação.
+                </p>
               </div>
-              <div>
-                <Label htmlFor="phone">Telefone / WhatsApp*</Label>
-                <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="border-white/15 bg-transparent focus-visible:ring-[#00CFAF]" />
-              </div>
-              <div>
-                <Label htmlFor="company">Empresa / Projeto*</Label>
-                <Input id="company" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} className="border-white/15 bg-transparent focus-visible:ring-[#00CFAF]" />
+              <div className="w-full border-t border-white/8 pt-6 space-y-3">
+                <p className="text-xs text-white/35">Enquanto isso, conheça o processo de trabalho.</p>
+                <Button
+                  size="lg"
+                  className="w-full rounded-md border border-white/20 bg-transparent text-white hover:bg-white/5 uppercase tracking-wide"
+                  onClick={() => { setOpen(false); setSubmitted(false); setTimeout(() => document.getElementById('processo')?.scrollIntoView({ behavior: 'smooth' }), 150); }}
+                >
+                  Ver processo
+                </Button>
+                <button
+                  className="w-full text-xs text-white/30 hover:text-white/60 transition-colors duration-150 py-1"
+                  onClick={() => { setOpen(false); setSubmitted(false); }}
+                >
+                  Fechar
+                </button>
               </div>
             </div>
+          ) : (
+            /* ── FORMULÁRIO ── */
+            <>
+              <DialogHeader>
+                <div className="mx-auto mb-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-wide text-white/60">
+                  Desde 2012 construindo legado
+                </div>
+                <DialogTitle className="text-2xl text-white text-center">Agendar conversa inicial</DialogTitle>
+                <p className="mt-1 text-sm text-white/55 text-center">
+                  Primeiro, me conte rapidamente sobre você e sua marca.
+                </p>
+              </DialogHeader>
 
-            <div>
-              <Label>Qual pacote te interessa?</Label>
-              <RadioGroup value={form.pack} onValueChange={(v) => setForm({ ...form, pack: v })} className="mt-2 grid gap-2">
-                {['Essencial', 'Estratégico', 'Premium', 'Ainda não sei'].map((opt) => (
-                  <div key={opt} className="flex items-center gap-2 rounded-md border border-white/15 p-3 hover:border-white/30 transition-colors duration-150">
-                    <RadioGroupItem value={opt} id={`pack-${opt}`} className="text-[#00CFAF]" />
-                    <Label htmlFor={`pack-${opt}`} className="cursor-pointer">{opt}</Label>
+              <div className="space-y-6">
+                {/* Dados pessoais */}
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Label htmlFor="name">Nome*</Label>
+                    <Input
+                      id="name" value={form.name}
+                      onChange={(e) => { setForm({ ...form, name: e.target.value }); clearErr('name'); }}
+                      className={`mt-1 bg-transparent focus-visible:ring-[#00CFAF] ${errors.name ? 'border-red-500/60 focus-visible:ring-red-500/40' : 'border-white/15'}`}
+                    />
+                    {errors.name && <p className="mt-1.5 flex items-center gap-1 text-xs text-red-400"><XIcon className="h-3 w-3 shrink-0" />{errors.name}</p>}
                   </div>
-                ))}
-              </RadioGroup>
-            </div>
+                  <div>
+                    <Label htmlFor="email">E-mail*</Label>
+                    <Input
+                      id="email" type="email" value={form.email}
+                      onChange={(e) => { setForm({ ...form, email: e.target.value }); clearErr('email'); }}
+                      className={`mt-1 bg-transparent focus-visible:ring-[#00CFAF] ${errors.email ? 'border-red-500/60 focus-visible:ring-red-500/40' : 'border-white/15'}`}
+                    />
+                    {errors.email && <p className="mt-1.5 flex items-center gap-1 text-xs text-red-400"><XIcon className="h-3 w-3 shrink-0" />{errors.email}</p>}
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Telefone / WhatsApp*</Label>
+                    <Input
+                      id="phone" value={form.phone}
+                      onChange={(e) => { setForm({ ...form, phone: e.target.value }); clearErr('phone'); }}
+                      className={`mt-1 bg-transparent focus-visible:ring-[#00CFAF] ${errors.phone ? 'border-red-500/60 focus-visible:ring-red-500/40' : 'border-white/15'}`}
+                    />
+                    {errors.phone && <p className="mt-1.5 flex items-center gap-1 text-xs text-red-400"><XIcon className="h-3 w-3 shrink-0" />{errors.phone}</p>}
+                  </div>
+                  <div>
+                    <Label htmlFor="company">Empresa / Projeto*</Label>
+                    <Input
+                      id="company" value={form.company}
+                      onChange={(e) => { setForm({ ...form, company: e.target.value }); clearErr('company'); }}
+                      className={`mt-1 bg-transparent focus-visible:ring-[#00CFAF] ${errors.company ? 'border-red-500/60 focus-visible:ring-red-500/40' : 'border-white/15'}`}
+                    />
+                    {errors.company && <p className="mt-1.5 flex items-center gap-1 text-xs text-red-400"><XIcon className="h-3 w-3 shrink-0" />{errors.company}</p>}
+                  </div>
+                </div>
 
-            <div>
-              <Label htmlFor="timeline">Quando você quer lançar a nova marca?*</Label>
-              <select
-                id="timeline"
-                value={form.timeline}
-                onChange={(e) => setForm({ ...form, timeline: e.target.value })}
-                className="mt-2 w-full rounded-md border border-white/15 bg-[#111111] p-3 text-sm outline-none focus:border-[#00CFAF] transition-colors duration-150"
-              >
-                <option value="">Escolha…</option>
-                <option value="ASAP">Imediatamente (ASAP)</option>
-                <option value="1–2 semanas">1–2 semanas</option>
-                <option value="Próximo mês">Próximo mês</option>
-                <option value="2–3 meses">2–3 meses</option>
-                <option value="Planejando">Ainda planejando</option>
-              </select>
-            </div>
-
-            <div>
-              <Label>Orçamento disponível*</Label>
-              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {['Até R$ 7.000', 'R$ 7–12 mil', 'R$ 12–20 mil', 'Acima de R$ 20 mil'].map((b) => (
-                  <button
-                    key={b}
-                    onClick={() => setForm({ ...form, budget: b })}
-                    type="button"
-                    className={`rounded-md border p-3 text-sm transition-all duration-150 ${form.budget === b ? 'border-[#00CFAF] bg-[#00CFAF]/10 text-white' : 'border-white/15 bg-transparent text-white/70 hover:bg-white/5 hover:border-white/30'}`}
+                {/* Pacote */}
+                <div>
+                  <Label>Qual pacote te interessa?*</Label>
+                  {errors.pack && <p className="mt-1 flex items-center gap-1 text-xs text-red-400"><XIcon className="h-3 w-3 shrink-0" />{errors.pack}</p>}
+                  <RadioGroup
+                    value={form.pack}
+                    onValueChange={(v) => { setForm({ ...form, pack: v }); clearErr('pack'); }}
+                    className="mt-2 grid gap-2"
                   >
-                    {b}
-                  </button>
-                ))}
+                    {['Essencial', 'Estratégico', 'Premium', 'Ainda não sei'].map((opt) => (
+                      <div
+                        key={opt}
+                        onClick={() => { setForm({ ...form, pack: opt }); clearErr('pack'); }}
+                        className={`flex cursor-pointer items-center gap-3 rounded-md border p-3.5 transition-all duration-200 ${
+                          form.pack === opt
+                            ? 'border-[#00CFAF] bg-[#00CFAF]/10 shadow-[0_0_0_1px_rgba(0,207,175,0.15)]'
+                            : 'border-white/12 hover:border-white/25'
+                        }`}
+                      >
+                        <RadioGroupItem value={opt} id={`pack-${opt}`} className="shrink-0 text-[#00CFAF]" />
+                        <Label
+                          htmlFor={`pack-${opt}`}
+                          className={`cursor-pointer text-sm leading-none ${form.pack === opt ? 'font-medium text-white' : 'text-white/65'}`}
+                        >
+                          {opt}
+                        </Label>
+                        {form.pack === opt && <CheckIcon className="ml-auto h-4 w-4 shrink-0 text-[#00CFAF]" />}
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+
+                {/* Prazo */}
+                <div>
+                  <Label htmlFor="timeline">Quando você quer lançar a nova marca?*</Label>
+                  <select
+                    id="timeline"
+                    value={form.timeline}
+                    onChange={(e) => { setForm({ ...form, timeline: e.target.value }); clearErr('timeline'); }}
+                    className={`mt-2 w-full rounded-md border bg-[#111111] p-3 text-sm text-white outline-none transition-colors duration-150 focus:border-[#00CFAF] ${errors.timeline ? 'border-red-500/60' : 'border-white/15'}`}
+                  >
+                    <option value="">Escolha…</option>
+                    <option value="ASAP">Imediatamente (ASAP)</option>
+                    <option value="1–2 semanas">1–2 semanas</option>
+                    <option value="Próximo mês">Próximo mês</option>
+                    <option value="2–3 meses">2–3 meses</option>
+                    <option value="Planejando">Ainda planejando</option>
+                  </select>
+                  {errors.timeline && <p className="mt-1.5 flex items-center gap-1 text-xs text-red-400"><XIcon className="h-3 w-3 shrink-0" />{errors.timeline}</p>}
+                </div>
+
+                {/* Orçamento */}
+                <div>
+                  <Label>Faixa de investimento*</Label>
+                  {errors.budget && <p className="mt-1 flex items-center gap-1 text-xs text-red-400"><XIcon className="h-3 w-3 shrink-0" />{errors.budget}</p>}
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    {['Até R$ 7.000', 'R$ 7–12 mil', 'R$ 12–20 mil', 'Acima de R$ 20 mil'].map((b) => (
+                      <button
+                        key={b}
+                        type="button"
+                        onClick={() => { setForm({ ...form, budget: b }); clearErr('budget'); }}
+                        className={`relative rounded-md border p-3 text-left text-sm font-medium transition-all duration-200 ${
+                          form.budget === b
+                            ? 'border-[#00CFAF] bg-[#00CFAF]/10 text-white shadow-[0_0_0_1px_rgba(0,207,175,0.15)]'
+                            : 'border-white/12 bg-transparent text-white/60 hover:border-white/25 hover:text-white/85'
+                        }`}
+                      >
+                        {b}
+                        {form.budget === b && <CheckIcon className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#00CFAF]" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Descrição única */}
+                <div>
+                  <Label htmlFor="description">Conte sobre o seu projeto e objetivos*</Label>
+                  <Textarea
+                    id="description"
+                    value={form.description}
+                    onChange={(e) => { setForm({ ...form, description: e.target.value }); clearErr('description'); }}
+                    className={`mt-2 min-h-[160px] bg-transparent focus-visible:ring-[#00CFAF] ${errors.description ? 'border-red-500/60 focus-visible:ring-red-500/40' : 'border-white/15'}`}
+                    placeholder="Descreva o que você quer comunicar, quem é o seu público, o que te diferencia no mercado — e qual o maior desafio que quer resolver com a marca."
+                  />
+                  {errors.description && <p className="mt-1.5 flex items-center gap-1 text-xs text-red-400"><XIcon className="h-3 w-3 shrink-0" />{errors.description}</p>}
+                </div>
+
+                <Button
+                  size="lg"
+                  className="w-full rounded-md bg-[#00CFAF] text-black hover:bg-[#00A289] uppercase tracking-wide transition-all duration-200 hover:shadow-[0_0_20px_-4px] hover:shadow-[#00CFAF]/40"
+                  onClick={submit}
+                >
+                  Enviar e agendar <ArrowRightIcon className="ml-2 h-4 w-4" />
+                </Button>
+                <p className="-mt-2 text-center text-xs text-white/40">Retorno em até 24h úteis com os próximos passos.</p>
               </div>
-            </div>
+            </>
+          )}
 
-            <div>
-              <Label htmlFor="vision">Qual visão você quer comunicar?*</Label>
-              <Textarea
-                id="vision"
-                value={form.vision}
-                onChange={(e) => setForm({ ...form, vision: e.target.value })}
-                className="mt-2 min-h-[120px] border-white/15 bg-transparent focus-visible:ring-[#00CFAF]"
-                placeholder="Valores, público e o que te torna diferente (2–3 frases)."
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="challenge">Maior desafio hoje <span className="text-white/40">(opcional)</span></Label>
-              <Textarea
-                id="challenge"
-                value={form.challenge}
-                onChange={(e) => setForm({ ...form, challenge: e.target.value })}
-                className="mt-2 min-h-[100px] border-white/15 bg-transparent focus-visible:ring-[#00CFAF]"
-                placeholder="Ex.: não se diferencia, comunicação inconsistente, visual datado…"
-              />
-            </div>
-
-            <Button size="lg" className="w-full rounded-full bg-[#00CFAF] text-black hover:bg-[#00A289] uppercase tracking-wide transition-all duration-200 hover:shadow-[0_0_20px_-4px] hover:shadow-[#00CFAF]/40" onClick={submit}>
-              Enviar e agendar
-            </Button>
-            <p className="-mt-2 text-center text-xs text-white/40">Retorno em até 24h úteis com os próximos passos.</p>
-          </div>
         </DialogContent>
       </Dialog>
     </div>
