@@ -335,6 +335,14 @@ export default function CleitonAviLanding() {
     setSubmitted(true);
   };
 
+  const formatPhone = (value: string) => {
+    const d = value.replace(/\D/g, '').slice(0, 11);
+    if (d.length <= 2) return d;
+    if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+    if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+  };
+
   function sentenceCase(input: string) {
     if (!input) return '';
     const s = input.trim();
@@ -722,7 +730,7 @@ export default function CleitonAviLanding() {
                   <div>
                     <Label htmlFor="name">Nome*</Label>
                     <Input
-                      id="name" value={form.name}
+                      id="name" value={form.name} autoComplete="name"
                       onChange={(e) => { setForm({ ...form, name: e.target.value }); clearErr('name'); }}
                       className={`mt-1 bg-transparent focus-visible:ring-[#00CFAF] ${errors.name ? 'border-red-500/60 focus-visible:ring-red-500/40' : 'border-white/15'}`}
                     />
@@ -731,25 +739,26 @@ export default function CleitonAviLanding() {
                   <div>
                     <Label htmlFor="email">E-mail*</Label>
                     <Input
-                      id="email" type="email" value={form.email}
+                      id="email" type="email" value={form.email} autoComplete="email"
                       onChange={(e) => { setForm({ ...form, email: e.target.value }); clearErr('email'); }}
                       className={`mt-1 bg-transparent focus-visible:ring-[#00CFAF] ${errors.email ? 'border-red-500/60 focus-visible:ring-red-500/40' : 'border-white/15'}`}
                     />
                     {errors.email && <p className="mt-1.5 flex items-center gap-1 text-xs text-red-400"><XIcon className="h-3 w-3 shrink-0" />{errors.email}</p>}
                   </div>
                   <div>
-                    <Label htmlFor="phone">Telefone / WhatsApp*</Label>
+                    <Label htmlFor="phone">WhatsApp*</Label>
                     <Input
-                      id="phone" value={form.phone}
-                      onChange={(e) => { setForm({ ...form, phone: e.target.value }); clearErr('phone'); }}
+                      id="phone" type="tel" inputMode="numeric" value={form.phone}
+                      autoComplete="tel" placeholder="(47) 99999-9999"
+                      onChange={(e) => { setForm({ ...form, phone: formatPhone(e.target.value) }); clearErr('phone'); }}
                       className={`mt-1 bg-transparent focus-visible:ring-[#00CFAF] ${errors.phone ? 'border-red-500/60 focus-visible:ring-red-500/40' : 'border-white/15'}`}
                     />
                     {errors.phone && <p className="mt-1.5 flex items-center gap-1 text-xs text-red-400"><XIcon className="h-3 w-3 shrink-0" />{errors.phone}</p>}
                   </div>
                   <div>
-                    <Label htmlFor="company">Empresa / Projeto*</Label>
+                    <Label htmlFor="company">Nome da empresa*</Label>
                     <Input
-                      id="company" value={form.company}
+                      id="company" value={form.company} autoComplete="organization"
                       onChange={(e) => { setForm({ ...form, company: e.target.value }); clearErr('company'); }}
                       className={`mt-1 bg-transparent focus-visible:ring-[#00CFAF] ${errors.company ? 'border-red-500/60 focus-visible:ring-red-500/40' : 'border-white/15'}`}
                     />
