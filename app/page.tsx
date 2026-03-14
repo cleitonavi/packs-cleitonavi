@@ -683,7 +683,7 @@ export default function CleitonAviLanding() {
                   Enquanto isso, me acompanhe no Instagram e veja os bastidores dos projetos.
                 </p>
                 <a
-                  href="https://www.instagram.com/cleitonavi/"
+                  href="https://www.instagram.com/cleitonavi.design/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] px-6 py-3 text-sm font-medium uppercase tracking-wide text-white transition-opacity duration-200 hover:opacity-90"
